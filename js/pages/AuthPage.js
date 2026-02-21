@@ -48,7 +48,7 @@ export const AuthPage = {
                         <button id="btn-discord-login" class="btn btn-discord btn-full">
                             <span data-i18n="auth.login_btn"></span>
                         </button>
-                        <a href="/" data-link class="btn-back" data-i18n="auth.back_link"></a>
+                        <a href="#/" data-link class="btn-back" data-i18n="auth.back_link"></a>
                     </div>
                 </div>
             </div>

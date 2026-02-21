@@ -107,7 +107,7 @@ export const GroupFinderPage = {
                 const [response, dungeons, myChars] = await Promise.all([
                     API.getGroups(),
                     API.getDungeons(),
-                    API.getMyCharacters().catch(() => [])
+                    Header.getUserFromToken() ? API.getMyCharacters().catch(() => []) : Promise.resolve([])
                 ]);
 
                 // Guardar IDs de personajes del usuario para checks de membresía

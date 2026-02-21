@@ -50,7 +50,7 @@ export const Header = {
         return `
             <nav class="nav-container">
                 <div class="nav-logo">
-                    <a href="/" data-link class="logo-text">
+                    <a href="#/" data-link class="logo-text">
                         <img src="assets/classes/icons/${randomId}.png" alt="Logo" class="logo-img icon-technical">
                         <span>${CONFIG.APP_NAME}</span>
                     </a>
@@ -58,9 +58,9 @@ export const Header = {
 
                 <div class="nav-right">
                     <ul class="nav-links" id="nav-menu">
-                        <li><a href="/" data-link data-i18n="nav.find_group"></a></li>
-                        <li><a href="/dungeons" data-link data-i18n="nav.dungeons"></a></li>
-                        <li><a href="/profile" data-link data-i18n="nav.my_profile"></a></li>
+                        <li><a href="#/" data-link data-i18n="nav.find_group"></a></li>
+                        <li><a href="#/dungeons" data-link data-i18n="nav.dungeons"></a></li>
+                        <li><a href="#/profile" data-link data-i18n="nav.my_profile"></a></li>
                         
                         <li class="lang-custom-container">
                             <button class="lang-active-btn" id="lang-menu-btn">
@@ -90,7 +90,7 @@ export const Header = {
                                     <button id="btn-logout" class="logout-mini" title="${i18n.t('nav.logout')}">×</button>
                                 </div>
                             ` : `
-                                <a href="/login" class="btn btn-accent" data-link>
+                                <a href="#/login" class="btn btn-accent" data-link>
                                     <span data-i18n="nav.login"></span>
                                 </a>
                             `}

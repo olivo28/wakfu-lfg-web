@@ -36,13 +36,13 @@
             localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
             // Usamos origin para ir a la raiz del sitio + el hash
             setTimeout(() => {
-                window.location.replace(window.location.origin + '/#/profile');
+                window.location.replace('./#/profile');
             }, 2000); // Wait 2s to see debug info
         } else {
             console.error("Token missing in callback");
             // Si falla, volvemos al login tras ver el error
             setTimeout(() => {
-                window.location.replace(window.location.origin + '/#/login');
+                window.location.replace('./#/login');
             }, 5000);
         }
     </script>
