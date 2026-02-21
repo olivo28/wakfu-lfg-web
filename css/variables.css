@@ -1,0 +1,43 @@
+:root {
+    /* Fondo y Contenedores */
+    --bg-main: #1a1a1a;
+    --card-bg: #0f0f0f;
+    --card-header: #1a1a1a;
+    --card-border: #333333;
+
+    /* Inputs */
+    --input-bg: #080808;
+    --input-border: #333333;
+    --input-placeholder: #666666;
+
+    /* Texto */
+    --text-main: #ffffff;
+    --text-dim: #888888;
+
+    /* Acentos y Estados */
+    --accent: #3b8ed0;
+    /* Azul Principal */
+    --track-on: #3b8ed0;
+    /* Azul Activo */
+    --track-off: #666666;
+    /* Gris Inactivo */
+    --success: #00ffaa;
+    --success-bg: #0d1a10;
+
+    /* Botones */
+    --btn-bg: #2b2b2b;
+    --btn-border: #3d3d3d;
+    --btn-delete: #700000;
+    --btn-delete-text: #dddddd;
+
+    /* Otros */
+    --scroll-bg: #101010;
+    --overlay: rgba(0, 0, 0, 0.7);
+
+    /* Tipografías y Medidas */
+    --font-mono: 'Courier New', Courier, monospace;
+    /* Para inputs según tu estilo */
+    --font-sans: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --radius: 4px;
+    --header-height: 60px;
+}

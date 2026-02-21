@@ -1,0 +1,93 @@
+/* --- Ajustes para Tablets (Menos de 1024px) --- */
+@media (max-width: 1024px) {
+    .layout-content {
+        padding: 10px;
+    }
+}
+
+/* --- Ajustes para Móviles (Menos de 768px) --- */
+@media (max-width: 768px) {
+    :root {
+        --header-height: 55px;
+    }
+
+    /* Tipografía adaptable para evitar desbordes en otros idiomas */
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    /* Utilidades de visibilidad */
+    .hide-mobile {
+        display: none !important;
+    }
+
+    /* Ajuste de navegación móvil */
+    .nav-links {
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .nav-links li {
+        width: 100%;
+        border-bottom: 1px solid var(--card-border);
+    }
+
+    .nav-links li a {
+        display: block;
+        padding: 12px 0;
+        font-size: 14px;
+    }
+
+    .auth-section {
+        border-bottom: none !important;
+        margin-top: 10px;
+    }
+}
+
+/* --- Ajustes para Móviles Pequeños (Menos de 480px) --- */
+@media (max-width: 480px) {
+    .layout-content {
+        padding: 8px;
+    }
+
+    /* Forzar botones a ocupar ancho completo para mejor ergonomía táctil */
+    .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    /* Ajuste de inputs para evitar zoom automático en iOS */
+    .input-tech {
+        font-size: 16px;
+    }
+
+    /* Padding reducido en tarjetas para ganar espacio */
+    .card-body {
+        padding: 10px;
+    }
+
+    .section-title {
+        font-size: 12px;
+    }
+}
+
+/* --- Soporte para Pantallas Muy Anchas --- */
+@media (min-width: 1400px) {
+    .layout-content {
+        max-width: 1300px;
+    }
+}
+
+/* --- Ajustes para Orientación Horizontal en Móviles --- */
+@media (max-height: 450px) and (orientation: landscape) {
+    .nav-links {
+        overflow-y: auto;
+        max-height: calc(100vh - var(--header-height));
+    }
+}

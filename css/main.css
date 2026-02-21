@@ -1,0 +1,22 @@
+/* 1. Base y Variables */
+@import url('variables.css');
+@import url('reset.css');
+
+/* 2. Estructura y Layout */
+@import url('layout.css');
+
+/* 3. UI Reutilizable */
+@import url('components.css');
+
+/* 4. Estilos de Páginas Específicas */
+@import url('pages.css');
+
+/* 5. Ajustes Finales de Responsividad */
+@import url('responsive.css');
+@import url('lfg_extra.css');
+
+/**
+ * Nota: El orden es crítico. 
+ * Variables debe ser el primero para que los demás archivos puedan usarlas.
+ * Responsive debe ser el último para que sus reglas tengan prioridad.
+ */

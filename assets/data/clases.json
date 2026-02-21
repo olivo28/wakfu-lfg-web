@@ -1,0 +1,398 @@
+[
+  {
+    "id": 1,
+    "names": {
+      "en": "Feca",
+      "es": "Feca",
+      "fr": "Féca",
+      "pt": "Feca"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/1.png",
+      "male": {
+        "emote": "assets/classes/emote/010.png",
+        "illustration": "assets/classes/ilustrations/10.png",
+        "body": "assets/classes/body/feca_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/011.png",
+        "illustration": "assets/classes/ilustrations/11.png",
+        "body": "assets/classes/body/feca_f.png"
+      }
+    }
+  },
+  {
+    "id": 2,
+    "names": {
+      "en": "Osamodas",
+      "es": "Osamodas",
+      "fr": "Osamodas",
+      "pt": "Osamodas"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/2.png",
+      "male": {
+        "emote": "assets/classes/emote/020.png",
+        "illustration": "assets/classes/ilustrations/20.png",
+        "body": "assets/classes/body/osa_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/021.png",
+        "illustration": "assets/classes/ilustrations/21.png",
+        "body": "assets/classes/body/osa_f.png"
+      }
+    }
+  },
+  {
+    "id": 3,
+    "names": {
+      "en": "Enutrof",
+      "es": "Anutrof",
+      "fr": "Enutrof",
+      "pt": "Enutrof"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/3.png",
+      "male": {
+        "emote": "assets/classes/emote/030.png",
+        "illustration": "assets/classes/ilustrations/30.png",
+        "body": "assets/classes/body/enutrof_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/031.png",
+        "illustration": "assets/classes/ilustrations/31.png",
+        "body": "assets/classes/body/enutrof_f.png"
+      }
+    }
+  },
+  {
+    "id": 4,
+    "names": {
+      "en": "Sram",
+      "es": "Sram",
+      "fr": "Sram",
+      "pt": "Sram"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/4.png",
+      "male": {
+        "emote": "assets/classes/emote/040.png",
+        "illustration": "assets/classes/ilustrations/40.png",
+        "body": "assets/classes/body/sram_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/041.png",
+        "illustration": "assets/classes/ilustrations/41.png",
+        "body": "assets/classes/body/sram_f.png"
+      }
+    }
+  },
+  {
+    "id": 5,
+    "names": {
+      "en": "Xelor",
+      "es": "Xelor",
+      "fr": "Xélor",
+      "pt": "Xelor"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/5.png",
+      "male": {
+        "emote": "assets/classes/emote/050.png",
+        "illustration": "assets/classes/ilustrations/50.png",
+        "body": "assets/classes/body/xelor_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/051.png",
+        "illustration": "assets/classes/ilustrations/51.png",
+        "body": "assets/classes/body/xelor_f.png"
+      }
+    }
+  },
+  {
+    "id": 6,
+    "names": {
+      "en": "Ecaflip",
+      "es": "Zurcarák",
+      "fr": "Ecaflip",
+      "pt": "Ecaflip"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/6.png",
+      "male": {
+        "emote": "assets/classes/emote/060.png",
+        "illustration": "assets/classes/ilustrations/60.png",
+        "body": "assets/classes/body/ecaflip_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/061.png",
+        "illustration": "assets/classes/ilustrations/61.png",
+        "body": "assets/classes/body/ecaflip_f.png"
+      }
+    }
+  },
+  {
+    "id": 7,
+    "names": {
+      "en": "Eniripsa",
+      "es": "Aniripsa",
+      "fr": "Eniripsa",
+      "pt": "Eniripsa"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/7.png",
+      "male": {
+        "emote": "assets/classes/emote/070.png",
+        "illustration": "assets/classes/ilustrations/70.png",
+        "body": "assets/classes/body/eni_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/071.png",
+        "illustration": "assets/classes/ilustrations/71.png",
+        "body": "assets/classes/body/eni_f.png"
+      }
+    }
+  },
+  {
+    "id": 8,
+    "names": {
+      "en": "Iop",
+      "es": "Yopuka",
+      "fr": "Iop",
+      "pt": "Iop"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/8.png",
+      "male": {
+        "emote": "assets/classes/emote/080.png",
+        "illustration": "assets/classes/ilustrations/80.png",
+        "body": "assets/classes/body/iop_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/081.png",
+        "illustration": "assets/classes/ilustrations/81.png",
+        "body": "assets/classes/body/iop_f.png"
+      }
+    }
+  },
+  {
+    "id": 9,
+    "names": {
+      "en": "Cra",
+      "es": "Ocra",
+      "fr": "Crâ",
+      "pt": "Cra"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/9.png",
+      "male": {
+        "emote": "assets/classes/emote/090.png",
+        "illustration": "assets/classes/ilustrations/90.png",
+        "body": "assets/classes/body/cra_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/091.png",
+        "illustration": "assets/classes/ilustrations/91.png",
+        "body": "assets/classes/body/cra_f.png"
+      }
+    }
+  },
+  {
+    "id": 10,
+    "names": {
+      "en": "Sadida",
+      "es": "Sadida",
+      "fr": "Sadida",
+      "pt": "Sadida"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/10.png",
+      "male": {
+        "emote": "assets/classes/emote/100.png",
+        "illustration": "assets/classes/ilustrations/100.png",
+        "body": "assets/classes/body/sadida_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/101.png",
+        "illustration": "assets/classes/ilustrations/101.png",
+        "body": "assets/classes/body/sadida_f.png"
+      }
+    }
+  },
+  {
+    "id": 11,
+    "names": {
+      "en": "Sacrier",
+      "es": "Sacrógrito",
+      "fr": "Sacrieur",
+      "pt": "Sacrier"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/11.png",
+      "male": {
+        "emote": "assets/classes/emote/110.png",
+        "illustration": "assets/classes/ilustrations/110.png",
+        "body": "assets/classes/body/sacrieur_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/111.png",
+        "illustration": "assets/classes/ilustrations/111.png",
+        "body": "assets/classes/body/sacrieur_f.png"
+      }
+    }
+  },
+  {
+    "id": 12,
+    "names": {
+      "en": "Pandawa",
+      "es": "Pandawa",
+      "fr": "Pandawa",
+      "pt": "Pandawa"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/12.png",
+      "male": {
+        "emote": "assets/classes/emote/120.png",
+        "illustration": "assets/classes/ilustrations/120.png",
+        "body": "assets/classes/body/pandawa_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/121.png",
+        "illustration": "assets/classes/ilustrations/121.png",
+        "body": "assets/classes/body/pandawa_f.png"
+      }
+    }
+  },
+  {
+    "id": 13,
+    "names": {
+      "en": "Rogue",
+      "es": "Tymador",
+      "fr": "Roublard",
+      "pt": "Ladino"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/13.png",
+      "male": {
+        "emote": "assets/classes/emote/130.png",
+        "illustration": "assets/classes/ilustrations/130.png",
+        "body": "assets/classes/body/roublard_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/131.png",
+        "illustration": "assets/classes/ilustrations/131.png",
+        "body": "assets/classes/body/roublard_f.png"
+      }
+    }
+  },
+  {
+    "id": 14,
+    "names": {
+      "en": "Masqueraider",
+      "es": "Zobal",
+      "fr": "Zobal",
+      "pt": "Zobal"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/14.png",
+      "male": {
+        "emote": "assets/classes/emote/140.png",
+        "illustration": "assets/classes/ilustrations/140.png",
+        "body": "assets/classes/body/zobal_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/141.png",
+        "illustration": "assets/classes/ilustrations/141.png",
+        "body": "assets/classes/body/zobal_f.png"
+      }
+    }
+  },
+  {
+    "id": 15,
+    "names": {
+      "en": "Ouginak",
+      "es": "Ouginak",
+      "fr": "Ouginak",
+      "pt": "Kilorf"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/15.png",
+      "male": {
+        "emote": "assets/classes/emote/150.png",
+        "illustration": "assets/classes/ilustrations/150.png",
+        "body": "assets/classes/body/ouginak_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/151.png",
+        "illustration": "assets/classes/ilustrations/151.png",
+        "body": "assets/classes/body/ouginak_f.png"
+      }
+    }
+  },
+  {
+    "id": 16,
+    "names": {
+      "en": "Foggernaut",
+      "es": "Steamer",
+      "fr": "Steamer",
+      "pt": "Steamer"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/16.png",
+      "male": {
+        "emote": "assets/classes/emote/160.png",
+        "illustration": "assets/classes/ilustrations/160.png",
+        "body": "assets/classes/body/steamer_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/161.png",
+        "illustration": "assets/classes/ilustrations/161.png",
+        "body": "assets/classes/body/steamer_f.png"
+      }
+    }
+  },
+  {
+    "id": 18,
+    "names": {
+      "en": "Eliotrope",
+      "es": "Selotrop",
+      "fr": "Eliotrope",
+      "pt": "Eliotrope"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/18.png",
+      "male": {
+        "emote": "assets/classes/emote/180.png",
+        "illustration": "assets/classes/ilustrations/180.png",
+        "body": "assets/classes/body/eliotrope_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/181.png",
+        "illustration": "assets/classes/ilustrations/181.png",
+        "body": "assets/classes/body/eliotrope_f.png"
+      }
+    }
+  },
+  {
+    "id": 19,
+    "names": {
+      "en": "Huppermage",
+      "es": "Hipermago",
+      "fr": "Huppermage",
+      "pt": "Huppermago"
+    },
+    "assets": {
+      "icon": "assets/classes/icons/19.png",
+      "male": {
+        "emote": "assets/classes/emote/190.png",
+        "illustration": "assets/classes/ilustrations/190.png",
+        "body": "assets/classes/body/huppermage_m.png"
+      },
+      "female": {
+        "emote": "assets/classes/emote/191.png",
+        "illustration": "assets/classes/ilustrations/191.png",
+        "body": "assets/classes/body/huppermage_f.png"
+      }
+    }
+  }
+]

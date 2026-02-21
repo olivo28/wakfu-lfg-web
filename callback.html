@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticando...</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body class="theme-dark">
+    <div
+        style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; gap:20px;">
+        <div class="wakfu-spinner"></div>
+        <p class="label-tech">SINCRONIZANDO...</p>
+    </div>
+
+    <script type="module">
+        import { CONFIG } from './js/config.js';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+
+        // DEBUG: Mostrar info en pantalla
+        document.body.insertAdjacentHTML('beforeend', `
+            <div style="margin-top:20px; font-family:monospace; color:#aaa; font-size:12px; background:#111; padding:10px; border-radius:5px;">
+                <p><strong>URL:</strong> ${window.location.href}</p>
+                <p><strong>Search:</strong> "${window.location.search}"</p>
+                <p><strong>Hash:</strong> "${window.location.hash}"</p>
+                <p><strong>Token detected:</strong> ${!!token}</p>
+            </div>
+        `);
+
+        if (token) {
+            console.log("Token found:", token);
+            localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
+            // Usamos origin para ir a la raiz del sitio + el hash
+            setTimeout(() => {
+                window.location.replace(window.location.origin + '/#/profile');
+            }, 2000); // Wait 2s to see debug info
+        } else {
+            console.error("Token missing in callback");
+            // Si falla, volvemos al login tras ver el error
+            setTimeout(() => {
+                window.location.replace(window.location.origin + '/#/login');
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>

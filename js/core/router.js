@@ -1,0 +1,112 @@
+import { GroupFinderPage } from '../pages/GroupFinderPage.js';
+import { ProfilePage } from '../pages/ProfilePage.js';
+import { AuthPage } from '../pages/AuthPage.js';
+import { DungeonListPage } from '../pages/DungeonListPage.js'; 
+import { GroupDetailPage } from '../pages/GroupDetailPage.js'; // NEW
+import { CONFIG } from '../config.js';
+import { SEO } from './seo.js';
+
+const routes = {
+    '/': GroupFinderPage,
+    '/finder': GroupFinderPage,
+    '/profile': ProfilePage,
+    '/login': AuthPage,
+    '/dungeons': DungeonListPage,
+    '/group': GroupDetailPage
+};
+
+export const Router = {
+    params: {}, 
+    currentPath: '',
+
+    init() {
+        // Redirección si entran por ruta limpia (ej: /profile -> /#/profile)
+        if (window.location.pathname !== '/' && !window.location.hash) {
+            const path = window.location.pathname;
+            window.location.replace(`/#${path}${window.location.search}`);
+            return;
+        }
+
+        document.body.addEventListener('click', e => {
+            const link = e.target.closest('[data-link]');
+            if (link) {
+                e.preventDefault();
+                const targetPath = link.getAttribute('href');
+                this.navigateTo(targetPath);
+            }
+        });
+
+        window.addEventListener('hashchange', () => this.route());
+        this.route();
+    },
+
+    navigateTo(path) {
+        window.location.hash = `#${path}`;
+    },
+
+    async route() {
+        const fullHash = window.location.hash.slice(1) || '/';
+        const parts = fullHash.split('#');
+        const pathParts = parts[0].split('?')[0].split('/');
+        const path = '/' + (pathParts[1] || '');
+        
+        // --- OPTIMIZACIÓN SPA ---
+        // Si el path base es el mismo y hay un sub-hash (ej: /profile#sended)
+        // evitamos el flash del loader y el re-render total si la página ya está activa.
+        const isSamePath = (this.currentPath === path);
+        const hasSubHash = parts.length > 1;
+        this.currentPath = path;
+
+        // Extracción de parámetros dinámicos
+        if (pathParts[1] === 'group' && pathParts[2]) {
+            this.params.id = pathParts[2];
+        } else {
+            this.params.id = null;
+        }
+
+        if (window.location.search.includes('token=')) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
+                this.navigateTo('/profile');
+                return;
+            }
+        }
+
+        const page = routes[path] || routes['/'];
+        const appContainer = document.getElementById('app');
+        
+        // Si es el mismo path y solo cambió el hash secundario, NO limpiamos ni mostramos loader
+        if (isSamePath && hasSubHash) {
+            if (page.onHashChange) await page.onHashChange();
+            return;
+        }
+
+        if (path === '/dungeons' || path === '/' || path.startsWith('/finder') || path === '/profile' || path === '/group') {
+            document.body.classList.add('full-width-mode');
+        } else {
+            document.body.classList.remove('full-width-mode');
+        }
+
+        // Loader solo si cambiamos de página real
+        appContainer.innerHTML = '<div class="initial-loader"><div class="wakfu-spinner"></div></div>';
+
+        try {
+            appContainer.innerHTML = await page.render();
+            window.scrollTo(0, 0);
+            
+            // SEO Update
+            if (page.getSEOData) {
+                SEO.update(await page.getSEOData());
+            } else {
+                SEO.update();
+            }
+
+            if (page.afterRender) await page.afterRender();
+        } catch (error) {
+            console.error("Error en router:", error);
+            appContainer.innerHTML = `<div class="error-state">Error cargando la página: ${error.message}</div>`;
+        }
+    }
+};

@@ -1,0 +1,89 @@
+/* Normalización y Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Eliminar outline global como en tu función disableWebOutline */
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    height: 100%;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.4;
+    /* Prevenir scroll horizontal accidental */
+    overflow-x: hidden;
+}
+
+/* Tipografía técnica para inputs y áreas de datos */
+input,
+textarea,
+select,
+code,
+pre {
+    font-family: var(--font-mono);
+    font-weight: bold;
+}
+
+/* Enlaces */
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+}
+
+a:hover {
+    opacity: 0.8;
+}
+
+/* Botones y Elementos interactivos */
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+
+/* Scrollbar personalizada para encajar con el estilo oscuro */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scroll-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--card-border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-dim);
+}
+
+/* Eliminar estilos por defecto en móviles (iOS Safari) */
+input,
+textarea {
+    -webkit-appearance: none;
+    border-radius: var(--radius);
+}

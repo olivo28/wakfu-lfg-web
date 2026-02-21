@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es"> <!-- Este atributo lo cambiará el i18n.js dinámicamente -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title data-i18n="ui.app_title"></title>
+
+    <meta name="description" content="Encuentra grupo para mazmorras en Wakfu.">
+
+    <!-- Social Meta Tags -->
+    <meta property="og:title" content="Wakfu LFG">
+    <meta property="og:description" content="Encuentra grupo para mazmorras en Wakfu.">
+    <meta property="og:image" content="assets/classes/icons/8.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <meta name="theme-color" content="#1a1a1a">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/lfg_extra.css">
+    <link rel="stylesheet" href="css/lfg_detail.css">
+    <link rel="stylesheet" href="css/stats.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/classes/icons/8.png">
+    <!-- External SDKs -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body class="theme-dark">
+
+    <!-- Header persistente (Se inyectará vía Header.js) -->
+    <header id="main-header" class="layout-header"></header>
+
+    <!-- Contenedor Principal (SPA Injection) -->
+    <main id="app" class="layout-content">
+        <div class="initial-loader">
+            <div class="wakfu-spinner"></div>
+            <p data-i18n="ui.loading"></p>
+        </div>
+    </main>
+
+    <!-- Footer persistente (Se inyectará vía Footer.js) -->
+    <footer id="main-footer" class="layout-footer"></footer>
+
+    <!-- Scripts Core -->
+    <script type="module" src="js/app.js"></script>
+
+    <!-- No-Script fallback (Idioma base por defecto) -->
+    <noscript>
+        <div style="text-align: center; padding: 50px;">
+            <h1>JavaScript Desactivado / Disabled</h1>
+            <p>Necesitas activar JavaScript para usar esta aplicación.</p>
+        </div>
+    </noscript>
+
+</body>
+
+</html>
