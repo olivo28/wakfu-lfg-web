@@ -114,9 +114,9 @@ Unlike traditional React or Vue apps, this project uses a **Modular Vanilla Patt
 
 This project is optimized for **GitHub Pages** deployment:
 
-- **Hash-based Routing**: Browsing to `/#/profile` works perfectly without any server-side configuration for fallbacks.
-- **Relative Pathing**: All asset links are relative, supporting deployments in subfolders (e.g., `user.github.io/my-sub-folder/`).
-- **Callback Handling**: The login flow uses `returnUrl` logic to ensure Discord redirects back to the correct deployment environment.
+- **Hash-based Routing**: Browsing to `/#/profile` works perfectly. The router is specifically patched to support subdirectory deployments (e.g., `https://user.github.io/repo-name/`) without domain-root jumping.
+- **Relative Pathing**: All asset links are relative, ensuring icons and styles load correctly regardless of the base path.
+- **Callback & Query Params**: The logic preserves query parameters during authentication even in subdirectories, facilitating seamless Discord integration.
 
 ---
 

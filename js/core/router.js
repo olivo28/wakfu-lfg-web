@@ -21,10 +21,16 @@ export const Router = {
 
     init() {
         // Redirección si entran por ruta limpia (ej: /profile -> /#/profile)
+        // Optimizamos para evitar redirecciones infinitas o incorrectas en subdirectorios (GitHub Pages)
         if (window.location.pathname !== '/' && !window.location.hash) {
             const path = window.location.pathname;
-            window.location.replace(`/#${path}${window.location.search}`);
-            return;
+            
+            // Si termina en / o parece un archivo (tiene punto), NO redirigimos al hash
+            // ya que suele ser el index de la carpeta raíz o subcarpeta.
+            if (!path.endsWith('/') && !path.includes('.')) {
+                window.location.replace(`/#${path}${window.location.search}`);
+                return;
+            }
         }
 
         document.body.addEventListener('click', e => {
