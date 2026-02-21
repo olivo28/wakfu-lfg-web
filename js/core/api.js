@@ -23,7 +23,7 @@ export const API = {
         if (response.status === 401) {
             localStorage.removeItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
             localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_DATA);
-            window.location.hash = '#/login';
+            window.location.hash = '/login';
             return;
         }
 

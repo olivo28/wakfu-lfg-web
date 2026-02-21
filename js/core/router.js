@@ -47,7 +47,9 @@ export const Router = {
     },
 
     navigateTo(path) {
-        window.location.hash = `#${path}`;
+        // Aseguramos que no haya doble hash (limpiamos cualquier '#' al inicio)
+        const cleanPath = path.replace(/^#+/, '');
+        window.location.hash = `#${cleanPath}`;
     },
 
     async route() {

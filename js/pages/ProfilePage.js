@@ -325,7 +325,7 @@ export const ProfilePage = {
     render: async () => {
         const user = Header.getUserFromToken();
         if (!user) {
-            window.location.hash = '#/login';
+            Router.navigateTo('/login');
             return '';
         }
 
@@ -465,8 +465,8 @@ export const ProfilePage = {
             else if (tab === 'teams') anchor = 'history';
             else if (tab === 'notifs') anchor = 'notifications';
 
-            const newHash = `#/profile#${anchor}`;
-            window.location.hash = newHash;
+            const newHash = `/profile#${anchor}`;
+            Router.navigateTo(newHash);
         }
     },
 

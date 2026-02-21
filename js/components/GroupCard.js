@@ -42,7 +42,7 @@ export const GroupCard = {
         const stasisClass = stasis > 5 ? 'stasis-high' : stasis > 2 ? 'stasis-mid' : 'stasis-low';
 
         return `
-            <div class="group-card-clean hover-tilt" style="cursor: pointer;" onclick="window.location.hash = '#/group/${group.id}'">
+            <div class="group-card-clean hover-tilt" style="cursor: pointer;" data-link href="/group/${group.id}">
                 ${isLeader ? `<button class="btn-edit-tech" data-id="${group.id}" title="${i18n.t('lfg.edit_title')}" onclick="event.stopPropagation();">✏️</button>` : ''}
                 <div class="banner-pure">
                     <img src="assets/mazmos/${dungeonId}.png" class="img-full" onerror="this.src='assets/backgrounds/default_dungeon.jpg'">

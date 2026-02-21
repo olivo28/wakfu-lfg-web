@@ -181,7 +181,7 @@ export const LFGModals = {
                 if (window.location.hash.includes('finder')) {
                     window.location.reload();
                 } else {
-                    window.location.hash = '#/finder';
+                    window.location.hash = '/finder';
                 }
             } catch (err) {
                 await Modal.error(i18n.t('lfg.error_prefix') + err.message);
