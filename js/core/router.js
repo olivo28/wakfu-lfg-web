@@ -103,6 +103,11 @@ export const Router = {
         // Si es el mismo path y solo cambió el hash secundario, NO limpiamos ni mostramos loader
         if (isSamePath && hasSubHash) {
             if (page.onHashChange) await page.onHashChange();
+            
+            // SEO Update on sub-hash change (optional but recommended for tab-system)
+            if (page.getSEOData) {
+                SEO.update(await page.getSEOData());
+            }
             return;
         }
 
@@ -120,10 +125,13 @@ export const Router = {
             window.scrollTo(0, 0);
             
             // SEO Update
-            if (page.getSEOData) {
-                SEO.update(await page.getSEOData());
-            } else {
-                SEO.update();
+            // If the page has 'manualSEO', it will handle the update after its own async data is loaded
+            if (!page.manualSEO) {
+                if (page.getSEOData) {
+                    SEO.update(await page.getSEOData());
+                } else {
+                    SEO.update();
+                }
             }
 
             if (page.afterRender) await page.afterRender();

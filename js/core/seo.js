@@ -8,7 +8,7 @@ export const SEO = {
     _defaultTags: {
         title: 'Wakfu LFG - Buscador de Grupos',
         description: 'Encuentra grupo para mazmorras en Wakfu de forma rápida y sencilla.',
-        image: 'https://wakfutracker.com/assets/ui/og_image.jpg', // Placeholder domain
+        image: `${window.location.origin}/assets/ui/og_image.jpg`,
         url: window.location.origin
     },
 

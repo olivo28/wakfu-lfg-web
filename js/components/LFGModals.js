@@ -22,8 +22,11 @@ export const LFGModals = {
 
         const modalContent = `
             <div class="form-tech-vertical" id="create-group-form">
+                <div class="group-hero-banner" id="create-group-banner" style="margin-bottom: 20px; border-radius: 8px; height: 120px;">
+                    <img src="assets/mazmos/${selectedDungeon?.id || 'default'}.png" class="hero-img" onerror="this.src='assets/backgrounds/default_dungeon.jpg'">
+                </div>
                 <div class="filter-group">
-                    <label class="label-tech" data-i18n="dungeons.dungeon">MAZMORRA</label>
+                    <label class="label-tech" data-i18n="dungeons.dungeon">Mazmorra</label>
                     <div id="create-dungeon-selector"></div>
                 </div>
 
@@ -42,10 +45,10 @@ export const LFGModals = {
                         </select>
                     </div>
                     <div class="filter-group" style="flex: 1;">
-                        <label class="label-tech" data-i18n="home.filter_server">SERVIDOR</label>
+                        <label class="label-tech" data-i18n="home.filter_server">Servidor</label>
                         <select id="group-server" class="input-tech">
                             ${CONFIG.SERVERS.map(s => `
-                                <option value="${s}" ${editData?.server == s ? 'selected' : ''}>${s.toUpperCase()}</option>
+                                <option value="${s}" ${editData?.server == s ? 'selected' : ''}>${s}</option>
                             `).join('')}
                         </select>
                     </div>
@@ -73,7 +76,7 @@ export const LFGModals = {
                                     return `
                                         <div class="custom-option" data-id="${c.id}" data-server="${c.server}">
                                             <img src="assets/classes/emote/${paddedId}${gender}.png" class="emote-mini">
-                                            <span>${c.name.toUpperCase()} (Lvl ${c.level})</span>
+                                            <span>${c.name} (Lvl ${c.level})</span>
                                         </div>
                                     `;
                                 }).join('')}
@@ -246,6 +249,10 @@ export const LFGModals = {
         // Inicializar el buscador de mazmorras dentro del modal
         DungeonSelector.init('create-dungeon-selector', (dungeon) => {
             selectedDungeon = dungeon;
+            const bannerImg = document.querySelector('#create-group-banner img');
+            if (bannerImg) {
+                bannerImg.src = `assets/mazmos/${dungeon.id}.png`;
+            }
         }, preSelectedDungeon || (editingGroup ? { id: editData.dungeonId, name: editData.dungeonName } : null)); 
 
         // Helper logic for toggle selection inside modal
@@ -313,7 +320,7 @@ export const LFGModals = {
                 leaderTrigger.innerHTML = `
                     <div class="select-trigger-content">
                         <img src="assets/classes/emote/${paddedId}${gender}.png" class="emote-mini">
-                        <span>${char.name.toUpperCase()} (Lvl ${char.level})</span>
+                        <span>${char.name} (Lvl ${char.level})</span>
                     </div>
                     <i class="arrow-down"></i>
                 `;
@@ -422,8 +429,8 @@ export const LFGModals = {
                     <img src="assets/mazmos/${dungeonId}.png" class="hero-img" onerror="this.src='assets/backgrounds/default_dungeon.jpg'">
                     <div class="hero-overlay">
                         <div class="hero-main-info">
-                            <span class="srv-badge srv-${server.toLowerCase()}">${server.toUpperCase()}</span>
-                            ${groupTitle ? `<h3 class="hero-room-title">${groupTitle.toUpperCase()}</h3>` : ''}
+                            <span class="srv-badge srv-${server.toLowerCase()}">${server}</span>
+                            ${groupTitle ? `<h3 class="hero-room-title">${groupTitle}</h3>` : ''}
                             <h2>${dungeonName[lang] || dungeonName['es'] || '...'}</h2>
                         </div>
                     </div>

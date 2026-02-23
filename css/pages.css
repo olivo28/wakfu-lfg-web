@@ -34,7 +34,6 @@
 
 .label-tech {
     font-size: 10px;
-    text-transform: uppercase;
     color: var(--accent);
     font-weight: bold;
     letter-spacing: 1px;
@@ -321,7 +320,6 @@
 /* Sidebar Specialized Polish */
 .finder-sidebar .sidebar-header h2 {
     font-size: 14px;
-    text-transform: uppercase;
     color: var(--text-dim);
     letter-spacing: 1px;
     margin-bottom: 0;
@@ -522,7 +520,6 @@
     width: 100%;
     font-size: 13px;
     padding: 8px;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 

@@ -49,7 +49,7 @@ export const CharacterCard = {
                             <span data-i18n="profile.level_short">LVL</span> ${levelDisplay}
                         </span>
                         <div class="char-class-info-banner">
-                            <span class="char-class-name" id="char-class-${char.id}">${className.toUpperCase()}</span>
+                            <span class="char-class-name" id="char-class-${char.id}">${className}</span>
                             <img src="${emoteImage}" class="char-emote-banner" draggable="false">
                         </div>
                     </div>
@@ -64,7 +64,7 @@ export const CharacterCard = {
 
                     <div class="char-stats-mini">
                         <div class="char-roles">
-                            <span class="label-tech" style="font-size: 8px;" data-i18n="roles.title">ROLES</span>
+                            <span class="label-tech" style="font-size: 8px;" data-i18n="roles.title">Roles</span>
                             <div class="roles-chips-container">
                                 ${char.roles.map(role => `
                                     <img src="assets/roles/${role}.png" class="role-icon-mini" title="${i18n.t('roles.' + role)}">
@@ -73,7 +73,7 @@ export const CharacterCard = {
                         </div>
 
                         <div class="char-elements">
-                            <span class="label-tech" style="font-size: 8px;" data-i18n="profile.elements_short">ELEMENTOS</span>
+                            <span class="label-tech" style="font-size: 8px;" data-i18n="profile.elements_short">Elementos</span>
                             <div class="elements-chips-container">
                                 ${char.elements.map(el => `
                                     <img src="assets/element/${el}.png" class="element-icon-mini" title="${i18n.t('elements.' + el)}">

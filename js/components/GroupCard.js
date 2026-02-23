@@ -65,7 +65,7 @@ export const GroupCard = {
                 </div>
                 <div class="info-tech-box">
                     <div class="tech-header">
-                        <span class="srv-label">${server.toUpperCase()}</span>
+                        <span class="srv-label">${server}</span>
                         <div class="stasis-tag ${stasisClass}">
                             <span>${i18n.t('dungeon.stasis')}: ${stasis}</span>
                         </div>
@@ -133,9 +133,7 @@ export const GroupCard = {
                                 ${(data.elements || []).map(el => `<img src="assets/element/${el}.png" class="element-icon-tech" title="${i18n.t('elements.' + el)}">`).join('')}
                             </div>
                             ${isModulated ? `<span class="chip-mod-tech">M</span>` : ''}
-                            <span class="chip-key-tech ${keyStatus === 'FREE' ? 'free' : 'paid'}">
-                                ${keyStatus === 'FREE' ? i18n.t('ui.free').toUpperCase() : i18n.t('ui.key').toUpperCase()}
-                            </span>
+                                ${keyStatus === 'FREE' ? i18n.t('ui.free') : i18n.t('ui.key')}
                         </div>
                     </div>
                 </div>

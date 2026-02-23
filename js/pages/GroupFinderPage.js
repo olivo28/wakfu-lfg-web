@@ -10,10 +10,29 @@ export const GroupFinderPage = {
     selectedDungeon: null,
     myCharIds: new Set(),
     
-    getSEOData: () => ({
-        title: `${i18n.t('home.title')} | Wakfu LFG`,
-        description: i18n.t('home.subtitle') || 'Busca y únete a grupos para mazmorras en Wakfu.'
-    }),
+    getSEOData: () => {
+        const dung = GroupFinderPage.selectedDungeon;
+        const lang = i18n.currentLang;
+        const baseTitle = i18n.t('home.title');
+        
+        if (dung) {
+            const dName = dung.name[lang] || dung.name['es'];
+            return {
+                title: `${dName} - ${baseTitle} | ${i18n.t('ui.brand')}`,
+                description: i18n.t('lfg.seo_desc', { 
+                    dungeon: dName, 
+                    level: dung.min_lvl, 
+                    leader: 'Wakfu' 
+                }),
+                image: `${window.location.origin}/assets/mazmos/${dung.id}.png`
+            };
+        }
+
+        return {
+            title: `${baseTitle} | ${i18n.t('ui.brand')}`,
+            description: i18n.t('home.subtitle') || 'Busca y únete a grupos para mazmorras en Wakfu.'
+        };
+    },
 
     render: async () => {
         return `

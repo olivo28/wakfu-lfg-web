@@ -5,6 +5,7 @@ import { Router } from '../core/router.js';
 import { LFGModals } from '../components/LFGModals.js';
 import { Modal } from '../components/Modal.js';
 import { Socket } from '../core/Socket.js';
+import { SEO } from '../core/seo.js';
 
 const escapeHTML = (str) => {
     if (!str) return '';
@@ -24,6 +25,7 @@ export const GroupDetailPage = {
     classes: null,
     dungeons: null,
     pendingRequests: [],
+    manualSEO: true,
 
     getSEOData: async () => {
         const group = GroupDetailPage.group;
@@ -39,13 +41,13 @@ export const GroupDetailPage = {
         const leaderName = leaderChar?.name || group.creator_name || '...';
 
         return {
-            title: `${title.toUpperCase()} (${dungeonName}) | Wakfu LFG`,
+            title: `${title} (${dungeonName}) | ${i18n.t('ui.app_title')}`,
             description: i18n.t('lfg.seo_desc', { 
                 dungeon: dungeonName, 
                 level: data.level || '?', 
                 leader: leaderName 
             }),
-            image: `https://wakfutracker.com/assets/mazmos/${data.dungeonId}.png`
+            image: `${window.location.origin}/assets/mazmos/${data.dungeonId}.png`
         };
     },
 
@@ -98,6 +100,9 @@ export const GroupDetailPage = {
                 GroupDetailPage.bindListeners();
             }
 
+            // SEO Update after data is loaded
+            SEO.update(await GroupDetailPage.getSEOData());
+
             if (groupId) {
                 Socket.joinGroup(groupId);
                 Socket.off('group_update');
@@ -148,9 +153,9 @@ export const GroupDetailPage = {
             <div class="group-detail-container">
                 <header class="detail-header">
                     <div class="header-banner">
-                        <img src="assets/mazmos/${data.dungeonId}.png" class="banner-img-tech" onerror="this.src='assets/backgrounds/default_dungeon.jpg'">
+                        <img src="assets/mazmos/${data.dungeonId}.png" class="banner-img-tech" onerror="this.src='assets/mazmos/default.png'">
                         <div class="header-overlay">
-                            <h1 class="label-tech">${escapeHTML(data.title || dungeonName).toUpperCase()}</h1>
+                            <h1 class="label-tech">${escapeHTML(data.title || dungeonName)}</h1>
                             <p class="text-dim">${escapeHTML(dungeonName)} — ${i18n.t('profile.level_short')} ${levelDisplay} ${isModulated ? `(${i18n.t('dungeon.modulated')})` : ''}</p>
                         </div>
                     </div>
@@ -226,23 +231,23 @@ export const GroupDetailPage = {
                             <h3 class="label-tech">${i18n.t('lfg.req_info')}</h3>
                             
                             <div class="info-row">
-                                <span class="info-label">${i18n.t('lfg.leader').toUpperCase()}:</span>
+                                <span class="info-label">${i18n.t('lfg.leader')}:</span>
                                 <span class="info-val">${escapeHTML(group.creator_name || '...')}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">${i18n.t('ui.server').toUpperCase()}:</span>
+                                <span class="info-label">${i18n.t('ui.server')}:</span>
                                 <span class="info-val">${(data.server || 'all').toUpperCase()}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">${i18n.t('dungeon.stasis').toUpperCase()}:</span>
+                                <span class="info-label">${i18n.t('dungeon.stasis')}:</span>
                                 <span class="info-val">S${stasis}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">${i18n.t('dungeon.modulated').toUpperCase()}:</span>
+                                <span class="info-label">${i18n.t('dungeon.modulated')}:</span>
                                 <span class="info-val">${isModulated ? i18n.t('ui.yes') : i18n.t('ui.no')}</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">${i18n.t('ui.level').toUpperCase()} REQ:</span>
+                                <span class="info-label">${i18n.t('ui.level')} REQ:</span>
                                 <span class="info-val">${levelDisplay}</span>
                             </div>
 
@@ -313,19 +318,19 @@ export const GroupDetailPage = {
 
                         ${canManage ? `
                             <div class="leader-panel-tech admin-control-panel" style="border-color: rgba(0,255,150,0.2);">
-                                <h3 class="label-tech" style="color: var(--accent-color);">${(i18n.t('ui.actions') || 'GESTIÓN').toUpperCase()}</h3>
+                                <h3 class="label-tech" style="color: var(--accent-color);">${(i18n.t('ui.actions') || 'Gestión')}</h3>
                                 
                                 ${group.is_active !== false ? `
                                     <div class="action-panel-tech shared-actions" style="margin-top: 10px;">
                                         <button class="btn btn-block btn-finish-group" style="font-size: 11px; margin-bottom: 8px;">
-                                            ${(i18n.t('lfg.finish_group')).toUpperCase()}
+                                            ${(i18n.t('lfg.finish_group'))}
                                         </button>
                                         <div style="display: flex; gap: 8px;">
                                             <button class="btn btn-edit-group" style="flex: 1; font-size: 11px; background: rgba(255,255,255,0.05); padding: 8px;">
-                                                ${(i18n.t('ui.edit')).toUpperCase()}
+                                                ${(i18n.t('ui.edit'))}
                                             </button>
                                             <button class="btn btn-delete-group-perm" style="flex: 1; font-size: 11px; background: rgba(255,100,100,0.1); color: #ff6464; padding: 8px; border: 1px solid rgba(255,100,100,0.2);">
-                                                ${(i18n.t('lfg.delete_group')).toUpperCase()}
+                                                ${(i18n.t('lfg.delete_group'))}
                                             </button>
                                         </div>
                                     </div>
@@ -347,7 +352,7 @@ export const GroupDetailPage = {
 
                         ${(!isLeader && group.userPendingRequests && group.userPendingRequests.length > 0) ? `
                             <div class="leader-panel-tech">
-                                <h3 class="label-tech" data-i18n="lfg.sent_requests">${(i18n.t('lfg.sent_requests')).toUpperCase()}</h3>
+                                <h3 class="label-tech" data-i18n="lfg.sent_requests">${(i18n.t('lfg.sent_requests'))}</h3>
                                 <div class="requests-stack-mini">
                                     ${group.userPendingRequests.map(req => {
                                         const ch = req.requesterCharacter || req.character || req;
@@ -375,7 +380,7 @@ export const GroupDetailPage = {
                         ${members.length < (dungInfo?.players || 6) ? `
                             <div class="action-panel-tech" style="margin-top: ${isLeader || (group.userPendingRequests?.length > 0) ? '10px' : '0'}">
                                 <button class="btn btn-accent btn-block btn-join-detail" data-id="${group.id}">
-                                    ${i18n.t('ui.request_join').toUpperCase()}
+                                    ${i18n.t('ui.request_join')}
                                 </button>
                             </div>
                         ` : ''}

@@ -13,8 +13,8 @@ export const DungeonListPage = {
     },
 
     getSEOData: () => ({
-        title: `${i18n.t('dungeons.search')} | Wakfu LFG`,
-        description: 'Explora todas las mazmorras de Wakfu y consulta grupos activos.'
+        title: `${i18n.t('dungeons.title') || i18n.t('dungeons.search')} | ${i18n.t('ui.brand')}`,
+        description: i18n.t('dungeons.subtitle') || 'Explora todas las mazmorras de Wakfu y consulta grupos activos.'
     }),
 
     render: async () => {

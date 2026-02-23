@@ -6,6 +6,7 @@ import { CharacterCard } from '../components/CharacterCard.js';
 import { Header } from '../components/Header.js';
 import { Router } from '../core/router.js';
 import { NotificationSystem } from '../core/notifications.js';
+import { SEO } from '../core/seo.js';
 
 export const ProfilePage = {
     // Cache local de clases para evitar múltiples fetchs
@@ -14,10 +15,23 @@ export const ProfilePage = {
 
     currentTab: 'chars',
 
-    getSEOData: () => ({
-        title: `${i18n.t('nav.profile')} | Wakfu LFG`,
-        description: 'Gestiona tus personajes y revisa tus solicitudes de grupo.'
-    }),
+    getSEOData: () => {
+        const tab = ProfilePage.currentTab;
+        const keyMap = { 
+            chars: 'chars', 
+            groups: 'requests', 
+            sent: 'sent', 
+            teams: 'teams',
+            notifs: 'notifs'
+        };
+        const baseKey = keyMap[tab] || tab;
+        const pageTitle = i18n.t(`profile.tab_${baseKey}_title`) || i18n.t('nav.profile');
+
+        return {
+            title: `${pageTitle} | ${i18n.t('ui.brand')}`,
+            description: i18n.t(`profile.tab_${baseKey}_desc`) || 'Gestiona tus personajes y revisa tus solicitudes de grupo.'
+        };
+    },
 
     refresh: async () => {
         if (Router.currentPath !== '/profile') return;
@@ -69,12 +83,12 @@ export const ProfilePage = {
                         return `
                         <div class="request-card-premium card-clickable" data-group-id="${req.LfgGroup?.groupId}">
                             <div class="req-side-banner">
-                                <img src="assets/mazmos/${dungeonId}.png" onerror="this.src='assets/ui/placeholder_dung.jpg'">
+                                <img src="assets/mazmos/${dungeonId}.png" onerror="this.src='assets/mazmos/default.png'">
                             </div>
                             <div class="req-content-main">
                                 <div class="req-info-header">
                                     <div class="req-titles-stack">
-                                        ${groupTitle ? `<span class="req-group-title-mini">${groupTitle.toUpperCase()}</span>` : ''}
+                                        ${groupTitle ? `<span class="req-group-title-mini">${groupTitle}</span>` : ''}
                                         <span class="req-dung-name">${dungeon}</span>
                                     </div>
                                     <div class="req-meta-badges">
@@ -122,7 +136,7 @@ export const ProfilePage = {
                 return `
                 <div class="request-card-premium card-clickable" data-group-id="${req.LfgGroup?.groupId}">
                     <div class="req-side-banner">
-                        <img src="assets/mazmos/${dungeonId}.png" onerror="this.src='assets/ui/placeholder_dung.jpg'">
+                        <img src="assets/mazmos/${dungeonId}.png" onerror="this.src='assets/mazmos/default.png'">
                         <div class="status-indicator status-${status}"></div>
                     </div>
                     <div class="req-content-main">
@@ -145,7 +159,7 @@ export const ProfilePage = {
                     </div>
                     <div class="req-actions-panel">
                         <div class="applicant-bubble">
-                            <span class="status-label status-${status}">${status.toUpperCase()}</span>
+                            <span class="status-label status-${status}">${status}</span>
                             <span class="text-dim-mini">${req.requesterCharacter?.name || ''}</span>
                         </div>
                         <div class="btn-group-vertical">
@@ -261,12 +275,12 @@ export const ProfilePage = {
                 return `
                 <div class="request-card-premium card-clickable" data-group-id="${group.id || data.groupId}">
                     <div class="req-side-banner">
-                        <img src="assets/mazmos/${data.dungeonId}.png" onerror="this.src='assets/backgrounds/default_dungeon.jpg'">
+                        <img src="assets/mazmos/${data.dungeonId}.png" onerror="this.src='assets/mazmos/default.png'">
                     </div>
                     <div class="req-content-main">
                         <div class="req-info-header">
                             <div class="req-titles-stack">
-                                <span class="req-group-title-mini">${(data.title || i18n.t('ui.title')).toUpperCase()}</span>
+                                <span class="req-group-title-mini">${(data.title || i18n.t('ui.title'))}</span>
                                 <span class="req-dung-name">${dungeon}</span>
                             </div>
                             <div class="req-meta-badges">
@@ -283,8 +297,8 @@ export const ProfilePage = {
                     </div>
                     <div class="req-actions-panel" style="width: auto; background: transparent; border: none;">
                         ${isActive 
-                            ? `<span class="status-badge status-accepted" style="text-transform: uppercase; font-size: 9px;">${i18n.t('lfg.status_recruiting')}</span>`
-                            : `<span class="status-badge status-closed" style="text-transform: uppercase; font-size: 9px; opacity: 0.6;">${i18n.t('lfg.status_closed')}</span>`
+                            ? `<span class="status-badge status-accepted" style="font-size: 9px;">${i18n.t('lfg.status_recruiting')}</span>`
+                            : `<span class="status-badge status-closed" style="font-size: 9px; opacity: 0.6;">${i18n.t('lfg.status_closed')}</span>`
                         }
                     </div>
                 </div>`;
@@ -300,14 +314,14 @@ export const ProfilePage = {
                 
                 <div class="teams-history-container">
                     ${activeGroups.length > 0 ? `
-                        <div class="tab-section-header" style="margin-top:0">${(i18n.t('filters.with_groups') || 'GRUPOS ACTIVOS').toUpperCase()}</div>
+                        <div class="tab-section-header" style="margin-top:0">${(i18n.t('filters.with_groups') || 'Grupos activos')}</div>
                         <div class="requests-premium-grid">
                             ${activeGroups.map(renderGroupCard).join('')}
                         </div>
                     ` : ''}
 
                     ${closedGroups.length > 0 ? `
-                        <div class="tab-section-header" style="margin-top: 30px;">${(i18n.t('profile.tab_teams_title') || 'HISTORIAL (CERRADOS)').toUpperCase()}</div>
+                        <div class="tab-section-header" style="margin-top: 30px;">${(i18n.t('profile.tab_teams_title') || 'Historial (Cerrados)')}</div>
                         <div class="requests-premium-grid">
                             ${closedGroups.map(renderGroupCard).join('')}
                         </div>
@@ -447,6 +461,9 @@ export const ProfilePage = {
             // Re-bind listeners de la pestaña
             await ProfilePage.bindTabListeners();
             i18n.translatePage();
+
+            // SEO update on tab switch
+            SEO.update(ProfilePage.getSEOData());
         }
 
         // 5. Opcional: Actualizar Hash para permitir recarga/compartir
