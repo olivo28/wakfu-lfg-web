@@ -1,6 +1,7 @@
 import { API } from '../core/api.js';
 import { i18n } from '../core/i18n.js';
 import { CONFIG } from '../config.js';
+import { Router } from '../core/router.js';
 import { Modal } from './Modal.js';
 import { DungeonSelector } from './DungeonSelector.js';
 import { CharacterCard } from './CharacterCard.js';
@@ -238,7 +239,7 @@ export const LFGModals = {
                     if (window.location.hash.includes('finder')) {
                         window.location.reload();
                     } else {
-                        window.location.hash = '/finder';
+                        Router.navigateTo('/');
                     }
                 }
             } catch (err) {

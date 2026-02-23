@@ -5,6 +5,7 @@ import { DungeonListPage } from '../pages/DungeonListPage.js';
 import { GroupDetailPage } from '../pages/GroupDetailPage.js'; // NEW
 import { CONFIG } from '../config.js';
 import { SEO } from './seo.js';
+import { i18n } from './i18n.js';
 
 const routes = {
     '/': GroupFinderPage,
@@ -47,27 +48,58 @@ export const Router = {
     },
 
     navigateTo(path) {
-        // Aseguramos que no haya doble hash (limpiamos cualquier '#' al inicio)
-        const cleanPath = path.replace(/^#+/, '');
+        let cleanPath = path.replace(/^#+/, '');
+        if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+
+        const parts = cleanPath.split('/');
+        const langCandidate = parts[1];
+
+        // Si el path no tiene un prefijo de idioma válido, se lo añadimos
+        if (!CONFIG.SUPPORTED_LANGS.includes(langCandidate)) {
+            const currentLang = i18n.currentLang || localStorage.getItem(CONFIG.STORAGE_KEYS.LANG) || CONFIG.DEFAULT_LANG;
+            cleanPath = `/${currentLang}${cleanPath}`;
+        }
+
         window.location.hash = `#${cleanPath}`;
     },
 
     async route() {
-        const fullHash = window.location.hash.slice(1) || '/';
-        const parts = fullHash.split('#');
-        const pathParts = parts[0].split('?')[0].split('/');
-        const path = '/' + (pathParts[1] || '');
-        
-        // --- OPTIMIZACIÓN SPA ---
-        // Si el path base es el mismo y hay un sub-hash (ej: /profile#sended)
-        // evitamos el flash del loader y el re-render total si la página ya está activa.
-        const isSamePath = (this.currentPath === path);
-        const hasSubHash = parts.length > 1;
-        this.currentPath = path;
+        let fullHash = window.location.hash.slice(1) || '/';
+        if (!fullHash.startsWith('/')) fullHash = '/' + fullHash;
 
-        // Extracción de parámetros dinámicos
-        if (pathParts[1] === 'group' && pathParts[2]) {
-            this.params.id = pathParts[2];
+        const parts = fullHash.split('#');
+        const urlPart = parts[0].split('?')[0];
+        const pathParts = urlPart.split('/');
+        
+        const lang = pathParts[1];
+        
+        // 1. Verificación de idioma en la URL
+        if (!CONFIG.SUPPORTED_LANGS.includes(lang)) {
+            // Si no hay idioma válido, redirigimos usando navigateTo que lo añadirá
+            this.navigateTo(fullHash);
+            return;
+        }
+
+        // 2. Sincronizar i18n si el idioma de la URL es distinto al actual
+        if (i18n.currentLang !== lang) {
+            await i18n.setLanguage(lang);
+            // Actualizar Header para reflejar el cambio (banderas, links, etc)
+            try {
+                const { Header } = await import('../components/Header.js');
+                await Header.update();
+            } catch (e) { console.error(e); }
+        }
+
+        // 3. Determinar el path interno para el mapeo de rutas
+        const internalPath = '/' + (pathParts[2] || '');
+        
+        const isSamePath = (this.currentPath === internalPath);
+        const hasSubHash = parts.length > 1;
+        this.currentPath = internalPath;
+
+        // Extracción de parámetros dinámicos (ajustado para prefijo /lang/...)
+        if (pathParts[2] === 'group' && pathParts[3]) {
+            this.params.id = pathParts[3];
         } else {
             this.params.id = null;
         }
@@ -97,7 +129,7 @@ export const Router = {
             return;
         }
 
-        const page = routes[path] || routes['/'];
+        const page = routes[internalPath] || routes['/'];
         const appContainer = document.getElementById('app');
         
         // Si es el mismo path y solo cambió el hash secundario, NO limpiamos ni mostramos loader
@@ -111,7 +143,7 @@ export const Router = {
             return;
         }
 
-        if (path === '/dungeons' || path === '/' || path.startsWith('/finder') || path === '/profile' || path === '/group') {
+        if (internalPath === '/dungeons' || internalPath === '/' || internalPath.startsWith('/finder') || internalPath === '/profile' || internalPath === '/group') {
             document.body.classList.add('full-width-mode');
         } else {
             document.body.classList.remove('full-width-mode');

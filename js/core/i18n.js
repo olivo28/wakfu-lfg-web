@@ -8,11 +8,12 @@ export const i18n = {
      * Inicializa el sistema de idiomas
      */
     async init() {
-        // 1. Detectar idioma: LocalStorage > Navegador > Config Default
+        // 1. Detectar idioma: URL > LocalStorage > Navegador > Config Default
+        const hashLang = this.getLangFromHash();
         const savedLang = localStorage.getItem(CONFIG.STORAGE_KEYS.LANG);
         const browserLang = navigator.language.split('-')[0];
         
-        let langToLoad = savedLang || browserLang;
+        let langToLoad = hashLang || savedLang || browserLang;
 
         // Verificar si el idioma detectado está soportado
         if (!CONFIG.SUPPORTED_LANGS.includes(langToLoad)) {
@@ -20,6 +21,24 @@ export const i18n = {
         }
 
         await this.setLanguage(langToLoad);
+    },
+
+    /**
+     * Extrae el código de idioma del hash de la URL (ej: #/es/finder -> es)
+     */
+    getLangFromHash() {
+        const hash = window.location.hash.slice(1); // Remover '#'
+        if (!hash) return null;
+
+        const parts = hash.split('/');
+        // El primer elemento después del primer / suele ser el idioma
+        // Ejemplo: /es/finder -> ["", "es", "finder"]
+        const langCode = parts[1]; 
+        
+        if (CONFIG.SUPPORTED_LANGS.includes(langCode)) {
+            return langCode;
+        }
+        return null;
     },
 
     /**

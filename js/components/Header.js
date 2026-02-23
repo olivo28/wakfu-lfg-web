@@ -50,7 +50,7 @@ export const Header = {
         return `
             <nav class="nav-container">
                 <div class="nav-logo">
-                    <a href="#/" data-link class="logo-text">
+                    <a href="#/${currentLangCode}/" data-link class="logo-text">
                         <img src="assets/classes/icons/${randomId}.png" alt="Logo" class="logo-img icon-technical">
                         <span>${CONFIG.APP_NAME}</span>
                     </a>
@@ -58,9 +58,9 @@ export const Header = {
 
                 <div class="nav-right">
                     <ul class="nav-links" id="nav-menu">
-                        <li><a href="#/" data-link data-i18n="nav.find_group"></a></li>
-                        <li><a href="#/dungeons" data-link data-i18n="nav.dungeons"></a></li>
-                        <li><a href="#/profile" data-link data-i18n="nav.my_profile"></a></li>
+                        <li><a href="#/${currentLangCode}/" data-link data-i18n="nav.find_group"></a></li>
+                        <li><a href="#/${currentLangCode}/dungeons" data-link data-i18n="nav.dungeons"></a></li>
+                        <li><a href="#/${currentLangCode}/profile" data-link data-i18n="nav.my_profile"></a></li>
                         
                         <li class="lang-custom-container">
                             <button class="lang-active-btn" id="lang-menu-btn">
@@ -90,7 +90,7 @@ export const Header = {
                                     <button id="btn-logout" class="logout-mini" title="${i18n.t('nav.logout')}">×</button>
                                 </div>
                             ` : `
-                                <a href="#/login" class="btn btn-accent" data-link>
+                                <a href="#/${currentLangCode}/login" class="btn btn-accent" data-link>
                                     <span data-i18n="nav.login"></span>
                                 </a>
                             `}
@@ -120,12 +120,17 @@ export const Header = {
 
         document.querySelectorAll('.lang-option').forEach(opt => {
             opt.onclick = async () => {
+                const newLang = opt.dataset.lang;
                 langDropdown?.classList.remove('show');
-                await i18n.setLanguage(opt.dataset.lang);
-                // Re-render header to update flag icon
-                await Header.update();
-                // Re-render the full current page so dynamic cards update too
-                await Router.route();
+                
+                // En vez de setLanguage directo, cambiamos el hash.
+                // El Router detectará el cambio, llamará a i18n.setLanguage y re-renderizará todo.
+                const currentHash = window.location.hash.slice(1) || '/';
+                const parts = currentHash.split('/');
+                // parts[0] es "", parts[1] es el lenguaje antiguo
+                parts[1] = newLang;
+                
+                Router.navigateTo(parts.join('/'));
             };
         });
 
