@@ -27,7 +27,9 @@
         "leave": "Quitter",
         "remove": "Supprimer",
         "free": "Gratuit",
-        "key": "Clé"
+        "key": "Clé",
+        "created": "Créé",
+        "updated": "Mis à jour"
     },
     "nav": {
         "find_group": "Trouver un Groupe",
@@ -207,7 +209,10 @@
         "confirm_leader_leave_close": "Tu es le seul membre. Quitter et fermer le groupe ?",
         "recommended": "REC",
         "status_requested": "SOLLICITÉ",
-        "seo_desc": "Groupe pour {dungeon} (Niveau {level}). Chef : {leader}. Rejoignez maintenant !"
+        "seo_desc": "Groupe pour {dungeon} (Niveau {level}). Chef : {leader}. Rejoignez maintenant!",
+        "group_updated_ok": "Groupe mis à jour avec succès !",
+        "delete_group": "Supprimer le groupe",
+        "confirm_delete_permanent": "Êtes-vous sûr de vouloir supprimer définitivement ce groupe ? Cette action est irréversible."
     },
     "notifs": {
         "title": "Notifications",

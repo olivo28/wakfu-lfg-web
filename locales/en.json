@@ -27,7 +27,9 @@
         "leave": "Leave",
         "remove": "Remove",
         "free": "Free",
-        "key": "Key"
+        "key": "Key",
+        "created": "Created",
+        "updated": "Updated"
     },
     "nav": {
         "find_group": "Find Group",
@@ -207,7 +209,10 @@
         "confirm_leader_leave_close": "You are the only member. Leave and close the group?",
         "recommended": "REC",
         "status_requested": "REQUESTED",
-        "seo_desc": "Group for {dungeon} (Lvl {level}). Leader: {leader}. Join now!"
+        "seo_desc": "Group for {dungeon} (Lvl {level}). Leader: {leader}. Join now!",
+        "group_updated_ok": "Group updated successfully!",
+        "delete_group": "Delete Group",
+        "confirm_delete_permanent": "Are you sure you want to PERMANENTLY delete this group? This action cannot be undone."
     },
     "notifs": {
         "title": "Notifications",

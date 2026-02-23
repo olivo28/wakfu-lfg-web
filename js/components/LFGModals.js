@@ -9,6 +9,7 @@ export const LFGModals = {
     openCreateGroupModal: async (preSelectedDungeon = null, editingGroup = null) => {
         const lang = i18n.currentLang;
         const editData = editingGroup ? (editingGroup.data || editingGroup) : null;
+        const isEditing = !!editingGroup;
 
         // Obtener personajes del usuario para elegir el leader
         const myCharacters = await API.getMyCharacters();
@@ -222,18 +223,23 @@ export const LFGModals = {
             try {
                 if (editingGroup) {
                     await API.updateGroup(editingGroup.id, groupData);
+                    await Modal.info(i18n.t("lfg.group_updated_ok") || "¡Grupo actualizado!");
                 } else {
                     await API.createGroup(groupData);
+                    await Modal.info(i18n.t("lfg.group_created_ok"));
                 }
                 Modal.close();
-                // Optionally redirect or refresh
-                if (window.location.hash.includes('finder')) {
-                    window.location.reload();
+                if (onSuccess) {
+                    onSuccess();
                 } else {
-                    window.location.hash = '/finder';
+                    if (window.location.hash.includes('finder')) {
+                        window.location.reload();
+                    } else {
+                        window.location.hash = '/finder';
+                    }
                 }
             } catch (err) {
-                await Modal.error(i18n.t('lfg.error_prefix') + err.message);
+                await Modal.error((i18n.t('lfg.error_prefix') || 'Error: ') + err.message);
             }
         }, "modal-compact");
 

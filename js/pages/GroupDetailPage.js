@@ -126,10 +126,9 @@ export const GroupDetailPage = {
         const data = group.data || group;
         const members = data.members || [];
         const user = Header.getUserFromToken();
-        const isLeader = user && (
-            String(user.id) === String(group.leader_id) || 
-            String(user.id) === String(data.leader_id)
-        );
+        const isLeader = group.isLeaderView;
+        const isAdmin = group.isAdminView;
+        const canManage = isLeader || isAdmin;
         const lang = i18n.currentLang;
 
         const dungInfo = dungeons.find(d => d.id == data.dungeonId);
@@ -201,7 +200,7 @@ export const GroupDetailPage = {
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                                 </button>
                                             `;
-                                        } else if (isLeader && !isLeaderChar) {
+                                        } else if (canManage && !isLeaderChar) {
                                             return badge + `
                                                 <button class="btn-kick-member" data-id="${m.id}" title="${i18n.t('ui.remove')}">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -246,6 +245,14 @@ export const GroupDetailPage = {
                                 <span class="info-label">${i18n.t('ui.level').toUpperCase()} REQ:</span>
                                 <span class="info-val">${levelDisplay}</span>
                             </div>
+
+                            ${(group.createdAt || group.updatedAt) ? `
+                                <div class="admin-metadata-panel" style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 10px; color: var(--text-dim);">
+                                    ${group.createdAt ? `<div><strong>${i18n.t('ui.created') || 'CREADO'}:</strong> ${new Date(group.createdAt).toLocaleString()}</div>` : ''}
+                                    ${group.updatedAt ? `<div><strong>${i18n.t('ui.updated') || 'ACTUALIZADO'}:</strong> ${new Date(group.updatedAt).toLocaleString()}</div>` : ''}
+                                    ${group.isAdminView ? `<div style="color: var(--accent-color); margin-top: 4px;">[MODO ADMIN]</div>` : ''}
+                                </div>
+                            ` : ''}
 
                             <hr class="divider-tech">
                             
@@ -301,16 +308,39 @@ export const GroupDetailPage = {
                                         </div>
                                     `}).join('') : `<p class="text-dim-mini">${i18n.t('lfg.req_none')}</p>`}
                                 </div>
+                            </div>
+                        ` : ''}
+
+                        ${canManage ? `
+                            <div class="leader-panel-tech admin-control-panel" style="border-color: rgba(0,255,150,0.2);">
+                                <h3 class="label-tech" style="color: var(--accent-color);">${(i18n.t('ui.actions') || 'GESTIÓN').toUpperCase()}</h3>
+                                
                                 ${group.is_active !== false ? `
-                                <div class="action-panel-tech leader-actions" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px;">
-                                    <button class="btn btn-block btn-finish-group" style="font-size: 11px;">
-                                        ${(i18n.t('lfg.finish_group')).toUpperCase()}
-                                    </button>
-                                </div>
+                                    <div class="action-panel-tech shared-actions" style="margin-top: 10px;">
+                                        <button class="btn btn-block btn-finish-group" style="font-size: 11px; margin-bottom: 8px;">
+                                            ${(i18n.t('lfg.finish_group')).toUpperCase()}
+                                        </button>
+                                        <div style="display: flex; gap: 8px;">
+                                            <button class="btn btn-edit-group" style="flex: 1; font-size: 11px; background: rgba(255,255,255,0.05); padding: 8px;">
+                                                ${(i18n.t('ui.edit')).toUpperCase()}
+                                            </button>
+                                            <button class="btn btn-delete-group-perm" style="flex: 1; font-size: 11px; background: rgba(255,100,100,0.1); color: #ff6464; padding: 8px; border: 1px solid rgba(255,100,100,0.2);">
+                                                ${(i18n.t('lfg.delete_group')).toUpperCase()}
+                                            </button>
+                                        </div>
+                                    </div>
                                 ` : `
-                                <div class="status-badge-closed" style="text-align: center; color: var(--text-dim); padding: 10px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px; margin-top: 15px;">
-                                    ${(i18n.t('lfg.group_finished')).toUpperCase()}
-                                </div>
+                                    <div class="status-badge-closed" style="text-align: center; color: var(--text-dim); padding: 10px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px; margin-top: 10px;">
+                                        ${(i18n.t('lfg.group_finished')).toUpperCase()}
+                                    </div>
+                                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                        <button class="btn btn-edit-group" style="flex: 1; font-size: 11px; background: rgba(255,255,255,0.05); padding: 8px;">
+                                            ${(i18n.t('ui.edit')).toUpperCase()}
+                                        </button>
+                                        <button class="btn btn-delete-group-perm" style="flex: 1; font-size: 11px; background: rgba(255,100,100,0.1); color: #ff6464; padding: 8px; border: 1px solid rgba(255,100,100,0.2);">
+                                            ${(i18n.t('lfg.delete_group')).toUpperCase()}
+                                        </button>
+                                    </div>
                                 `}
                             </div>
                         ` : ''}
@@ -428,6 +458,19 @@ export const GroupDetailPage = {
 
         document.querySelector('.btn-finish-group')?.addEventListener('click', async () => {
             if (!await Modal.confirm(i18n.t('lfg.confirm_finish'))) return;
+            try {
+                await API.deleteGroup(GroupDetailPage.group.id, true);
+                Router.navigateTo('/finder');
+                await Modal.info(i18n.t('lfg.group_closed_ok'));
+            } catch (err) { await Modal.error(err.message); }
+        });
+
+        document.querySelector('.btn-edit-group')?.addEventListener('click', () => {
+            LFGModals.openCreateGroupModal(null, GroupDetailPage.group, () => GroupDetailPage.refresh());
+        });
+
+        document.querySelector('.btn-delete-group-perm')?.addEventListener('click', async () => {
+            if (!await Modal.confirm(i18n.t('lfg.confirm_delete_permanent') || '¿Eliminar permanentemente?')) return;
             try {
                 await API.deleteGroup(GroupDetailPage.group.id, true);
                 Router.navigateTo('/finder');

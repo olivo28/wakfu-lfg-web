@@ -56,7 +56,7 @@ export const GroupCard = {
 
         return `
             <div class="group-card-clean hover-tilt" style="cursor: pointer;" data-link href="/group/${group.id}">
-                ${isLeader ? `<div class="group-leader-actions">
+                ${(isLeader || group.isAdminView) ? `<div class="group-leader-actions">
                     <button class="btn-edit-tech" data-id="${group.id}" title="${i18n.t('lfg.edit_title')}" onclick="event.stopPropagation();">✏️</button>
                     <button class="btn-delete-tech" data-id="${group.id}" title="${i18n.t('ui.delete')}" onclick="event.stopPropagation(); if(confirm('${i18n.t('lfg.confirm_delete_group')}')) { import('../core/api.js').then(m => m.API.deleteGroup(${group.id}, true).then(() => window.location.reload())); }">🗑️</button>
                 </div>` : ''}
