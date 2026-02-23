@@ -47,7 +47,7 @@ export const GroupDetailPage = {
                 level: data.level || '?', 
                 leader: leaderName 
             }),
-            image: `${window.location.origin}/assets/mazmos/${data.dungeonId}.png`
+            image: `${window.location.href.split('#')[0]}assets/mazmos/${data.dungeonId}.png`
         };
     },
 
