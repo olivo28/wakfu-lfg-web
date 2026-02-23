@@ -35,7 +35,7 @@ export const GroupFinderPage = {
 
                     <div class="filter-group">
                         <label class="label-tech" data-i18n="filters.search"></label>
-                        <input type="text" id="group-search" class="input-tech" placeholder="${i18n.t('filters.placeholder_search')}" autocomplete="off">
+                        <input type="text" id="group-search" class="input-tech" placeholder="${i18n.t('filters.placeholder_group_search')}" autocomplete="off">
                     </div>
 
                     <div class="filter-group">
@@ -51,6 +51,15 @@ export const GroupFinderPage = {
                         <select id="filter-membership" class="input-tech">
                             <option value="all" data-i18n="ui.all"></option>
                             <option value="joined" data-i18n="filters.with_groups"></option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="label-tech" data-i18n="filters.type">TIPO</label>
+                        <select id="filter-type" class="input-tech">
+                            <option value="all" data-i18n="ui.all"></option>
+                            <option value="dungeon" data-i18n="dungeons.dungeon"></option>
+                            <option value="breach" data-i18n="dungeons.breach"></option>
                         </select>
                     </div>
 
@@ -127,6 +136,7 @@ export const GroupFinderPage = {
                     }
                     if (dungeon) {
                         data.capacity = dungeon.players;
+                        data.isDungeon = dungeon.isDungeon;
                     }
                     return group;
                 });
@@ -160,6 +170,7 @@ export const GroupFinderPage = {
             const query = normalize(searchInput.value.trim());
             const lang = i18n.currentLang;
             const filterMbrValue = document.getElementById('filter-membership')?.value || 'all';
+            const filterType = document.getElementById('filter-type')?.value || 'all';
             
             const currentActor = Header.getUserFromToken();
             const currUserId = currentActor ? String(currentActor.id) : null;
@@ -198,7 +209,11 @@ export const GroupFinderPage = {
                     matchSearch = titleMatch || memberMatch;
                 }
  
-                return matchServer && matchLevel && matchName && matchSearch && matchMember;
+                const matchType = filterType === 'all' 
+                    || (filterType === 'dungeon' && data.isDungeon !== false)
+                    || (filterType === 'breach' && data.isDungeon === false);
+
+                return matchServer && matchLevel && matchName && matchSearch && matchMember && matchType;
             });
             
             // ... (rest of applyFilters)
@@ -267,6 +282,7 @@ export const GroupFinderPage = {
         filterServer.addEventListener('change', applyFilters);
         searchInput.addEventListener('input', applyFilters);
         document.getElementById('filter-membership').addEventListener('change', applyFilters);
+        document.getElementById('filter-type')?.addEventListener('change', applyFilters);
  
         // Fetch initially
         fetchGroups();

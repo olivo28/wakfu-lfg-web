@@ -89,7 +89,7 @@ export const API = {
         method: 'DELETE'
     }),
 
-    deleteGroup: (groupId, completed = false) => API.request(`/lfg/${groupId}${completed ? '?completed=true' : ''}`, {
+    deleteGroup: (groupId, permanent = false) => API.request(`/lfg/${groupId}${permanent ? '?permanent=true' : ''}`, {
         method: 'DELETE'
     }),
 
@@ -129,6 +129,15 @@ export const API = {
     markNotificationAsRead: (id) => API.request(`/notifications/${id}/read`, { method: 'PATCH' }),
 
     cancelRequest: (id) => API.request(`/lfg/requests/${id}`, { method: 'DELETE' }),
+
+    // ==========================================================================
+    // 5. MECHANICS KNOWLEDGE
+    // ==========================================================================
+    getMyMechanics: () => API.request('/lfg/mechanics/mine'),
+
+    saveMechanics: (dungeonId) => API.request(`/lfg/mechanics/${dungeonId}`, {
+        method: 'POST'
+    }),
 
     // ==========================================================================
     // 5. DATOS ESTÁTICOS

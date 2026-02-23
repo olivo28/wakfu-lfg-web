@@ -28,7 +28,7 @@ export const LFGModals = {
 
                 <div class="filter-group">
                     <label class="label-tech" data-i18n="lfg.group_title"></label>
-                    <input type="text" id="group-title" class="input-tech" placeholder="${i18n.t('filters.placeholder_search')}" autocomplete="off" value="${editData?.title || ''}" maxlength="50">
+                    <input type="text" id="group-title" class="input-tech" placeholder="${i18n.t('filters.placeholder_group_title')}" autocomplete="off" value="${editData?.title || ''}" maxlength="50">
                 </div>
 
                 <div class="form-row">
@@ -122,6 +122,47 @@ export const LFGModals = {
                         `).join('')}
                     </div>
                 </div>
+
+                <div class="filter-group">
+                    <label class="label-tech" data-i18n="lfg.chat_languages"></label>
+                    <div class="roles-selection-visual" style="gap: 10px;">
+                        ${['PT', 'ES', 'EN', 'FR'].map(l => {
+                            const flags = {
+                                'PT': 'https://flagcdn.com/w80/br.png',
+                                'ES': 'https://flagcdn.com/w80/es.png',
+                                'EN': 'https://flagcdn.com/w80/us.png',
+                                'FR': 'https://flagcdn.com/w80/fr.png'
+                            };
+                            return `
+                            <label class="role-option-card">
+                                <input type="checkbox" name="chat-langs" value="${l}" 
+                                    ${editData?.languages?.includes(l) ? 'checked' : ''}>
+                                <div class="role-content" style="padding: 5px 15px; display: flex; align-items: center; gap: 8px;">
+                                    <img src="${flags[l]}" alt="${l}" style="width: 16px; border-radius: 2px;">
+                                    <span>${l}</span>
+                                </div>
+                            </label>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <div class="form-row" style="margin-bottom: 20px;">
+                    <div class="filter-group" style="flex: 1;">
+                        <label class="label-tech" data-i18n="lfg.mission_only"></label>
+                        <select id="group-mission-only" class="input-tech" style="border-color: #ffd700;">
+                            <option value="false" ${editData?.missionOnly === false ? 'selected' : ''} data-i18n="ui.no"></option>
+                            <option value="true" ${editData?.missionOnly === true ? 'selected' : ''} data-i18n="ui.yes"></option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="flex: 1;">
+                        <label class="label-tech" data-i18n="lfg.requires_mechanics" style="font-size: 8px;"></label>
+                        <select id="group-requires-mechanics" class="input-tech" style="border-color: #ff4d4d;">
+                            <option value="false" ${editData?.requiresMechanics === false ? 'selected' : ''} data-i18n="ui.no"></option>
+                            <option value="true" ${editData?.requiresMechanics === true ? 'selected' : ''} data-i18n="ui.yes"></option>
+                        </select>
+                    </div>
+                </div>
             </div>
         `;
 
@@ -141,6 +182,10 @@ export const LFGModals = {
             const isModulated = document.getElementById('group-modulated').value === 'true';
             const title = document.getElementById('group-title').value.trim();
             
+            const languages = Array.from(document.querySelectorAll('input[name="chat-langs"]:checked')).map(el => el.value);
+            const missionOnly = document.getElementById('group-mission-only').value === 'true';
+            const requiresMechanics = document.getElementById('group-requires-mechanics').value === 'true';
+
             // Si estamos editando, preservamos los miembros actuales pero actualizamos al líder
             let finalCharacters = [leader];
             if (editingGroup) {
@@ -166,8 +211,12 @@ export const LFGModals = {
                 roles_needed: rolesNeeded.length > 0 ? rolesNeeded : ['damage'],
                 dmgType: dmgType || 'melee',
                 elements: elements.length > 0 ? elements : ['fire'],
+                languages: languages.length > 0 ? languages : ['ES'],
+                missionOnly: missionOnly,
+                requiresMechanics: requiresMechanics,
                 characters: finalCharacters,
-                maxMembers: 6
+                maxMembers: selectedDungeon.players || 6,
+                capacity: selectedDungeon.players || 6
             };
 
             try {
@@ -356,7 +405,7 @@ export const LFGModals = {
             if (hasElement) reasons.push(i18n.t('profile.elements_short'));
 
             // 3. Tipo Daño
-            if (char.dmgType === groupDmgType) reasons.push(i18n.t('profile.dmg_type'));
+            if (char.dmgType && Array.isArray(char.dmgType) ? char.dmgType.includes(groupDmgType) : char.dmgType === groupDmgType) reasons.push(i18n.t('profile.dmg_type'));
 
             return reasons.length > 0 ? reasons.join(', ') : null;
         };
@@ -498,6 +547,21 @@ export const LFGModals = {
                 }
                 
                 try {
+                    const requiresMechanics = data.requiresMechanics === true;
+                    if (requiresMechanics) {
+                        try {
+                            const mechData = await API.getMyMechanics();
+                            const known = mechData.known_mechanics || [];
+                            if (!known.includes(String(dungeonId))) {
+                                const confirmMech = await Modal.confirm(i18n.t('lfg.mechanics_prompt_desc'), i18n.t('lfg.mechanics_prompt_title'));
+                                if (!confirmMech) return false;
+                                await API.saveMechanics(dungeonId);
+                            }
+                        } catch (e) {
+                            console.error('Error checking mechanics:', e);
+                        }
+                    }
+
                     await API.joinGroup(group.id, charId);
                     const char = myCharacters.find(c => c.id == charId);
                     await Modal.info(i18n.t('lfg.request_sent', { name: char.name }), i18n.t('lfg.request_sent_title'));

@@ -124,3 +124,23 @@ export const Modal = {
         });
     }
 };
+
+// Global event listener to close modals with the Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const modalRoot = document.getElementById('modal-root');
+        if (modalRoot) {
+            const cancelBtn = document.getElementById('modal-cancel');
+            const closeBtn = document.getElementById('modal-close');
+            
+            // Si hay botón de cancelar visible, actuamos como si lo pulsaran
+            if (cancelBtn && cancelBtn.style.display !== 'none') {
+                cancelBtn.click();
+            } else if (closeBtn) {
+                closeBtn.click();
+            } else {
+                Modal.close();
+            }
+        }
+    }
+});

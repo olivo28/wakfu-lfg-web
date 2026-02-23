@@ -336,19 +336,9 @@ export const ProfilePage = {
             else if (secondaryHash === 'sended') ProfilePage.currentTab = 'sent';
             else if (secondaryHash === 'mygroups') ProfilePage.currentTab = 'groups';
             else if (secondaryHash === 'history') ProfilePage.currentTab = 'teams';
+        } else {
+            ProfilePage.currentTab = 'chars';
         }
-
-        if (!ProfilePage.masterClasses) {
-            ProfilePage.masterClasses = await API.getClasses();
-        }
-        if (!ProfilePage.dungeonData) {
-            try {
-                const res = await fetch('assets/data/mazmos.json');
-                ProfilePage.dungeonData = await res.json();
-            } catch (e) { ProfilePage.dungeonData = []; }
-        }
-
-        const activeContent = await ProfilePage.renderTabContent(ProfilePage.currentTab);
         
         let tabTitle = i18n.t(`profile.tab_${ProfilePage.currentTab}_title`);
         let tabDesc = i18n.t(`profile.tab_${ProfilePage.currentTab}_desc`);
@@ -397,7 +387,9 @@ export const ProfilePage = {
                 </aside>
                 <main class="profile-main-content">
                     <div class="tab-content-wrapper" id="profile-tab-content">
-                        ${activeContent}
+                        <div class="initial-loader" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <div class="wakfu-spinner"></div>
+                        </div>
                     </div>
                 </main>
             </div>
@@ -488,6 +480,24 @@ export const ProfilePage = {
     },
 
     afterRender: async () => {
+        // Cargar datos pesados DE FORMA DIFERIDA para que el layout sidebar renderice instantáneamente
+        if (!ProfilePage.masterClasses) {
+            ProfilePage.masterClasses = await API.getClasses();
+        }
+        if (!ProfilePage.dungeonData) {
+            try {
+                const res = await fetch('assets/data/mazmos.json');
+                ProfilePage.dungeonData = await res.json();
+            } catch (e) { ProfilePage.dungeonData = []; }
+        }
+
+        // Una vez cargados, poblamos la pestaña activa
+        const contentEl = document.getElementById('profile-tab-content');
+        if (contentEl) {
+            const activeContent = await ProfilePage.renderTabContent(ProfilePage.currentTab);
+            contentEl.innerHTML = activeContent;
+        }
+
         const { Socket } = await import('../core/Socket.js');
         
         Socket.off('group_list_update');
@@ -726,14 +736,16 @@ export const ProfilePage = {
                     <div class="filter-group" style="flex: 0 1 auto;">
                         <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.dmg_type"></label>
                         <div class="dmg-grid" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                            ${CONFIG.DMG_TYPES.map(type => `
-                                <div class="dmg-card ${isEdit && char.dmgType === type ? 'selected' : ''}" onclick="window.toggleSelection(this, 'dmg-type')" data-value="${type}">
+                            ${CONFIG.DMG_TYPES.map(type => {
+                                const selected = isEdit && Array.isArray(char.dmgType) ? char.dmgType.includes(type) : (isEdit && char.dmgType === type);
+                                return `
+                                <div class="dmg-card ${selected ? 'selected' : ''}" onclick="window.toggleSelection(this, 'dmg-type')" data-value="${type}">
                                     <img src="assets/element/${type}.png" onerror="this.style.display='none'">
                                     <span data-i18n="dmg_types.${type}"></span>
                                 </div>
-                            `).join('')}
+                                `;
+                            }).join('')}
                         </div>
-                        <input type="hidden" id="char-dmg-type" value="${isEdit ? char.dmgType : ''}">
                     </div>
 
                     <!-- ELEMENTS (Max 3) -->
@@ -750,7 +762,7 @@ export const ProfilePage = {
                                 `;
                             }).join('')}
                             <!-- Stasis Special -->
-                            <div class="element-card special-stasis ${isEdit && char.elements?.includes('stasis') ? 'selected' : ''}" id="stasis-card" style="display: none;" data-value="stasis">
+                            <div class="element-card special-stasis ${isEdit && char.elements?.includes('stasis') ? 'selected' : ''}" id="stasis-card" style="display: ${isEdit && char.classId === 16 ? 'flex' : 'none'};" data-value="stasis">
                                 <img src="assets/element/stasis.png" onerror="this.style.display='none'">
                                 <span data-i18n="elements.stasis"></span>
                             </div>
@@ -765,16 +777,10 @@ export const ProfilePage = {
             if (!name) { await Modal.info(i18n.t('ui.name_required'), i18n.t('lfg.error_prefix')); return; }
  
             const roles = Array.from(document.querySelectorAll('input[name="roles"]:checked')).map(el => el.value);
-            const dmgType = document.getElementById('char-dmg-type').value;
+            const dmgTypes = Array.from(document.querySelectorAll('.dmg-card.selected')).map(el => el.dataset.value);
             
             // Collect elements
-            const elements = [];
-            const stasisCard = document.getElementById('stasis-card');
-            if (stasisCard.style.display !== 'none') {
-                elements.push('stasis');
-            } else {
-                document.querySelectorAll('.element-card.selected').forEach(el => elements.push(el.dataset.value));
-            }
+            const elements = Array.from(document.querySelectorAll('.element-card.selected')).map(el => el.dataset.value);
  
             const charData = {
                 name: name,
@@ -783,8 +789,8 @@ export const ProfilePage = {
                 classId: parseInt(document.getElementById('char-class').value),
                 gender: parseInt(document.getElementById('char-gender').value),
                 roles: roles.length > 0 ? roles : ['damage'],
-                dmgType: dmgType || 'melee',
-                elements: elements.length > 0 ? elements : ['fire']
+                dmgType: dmgTypes.length > 0 ? dmgTypes : ['melee'],
+                elements: elements
             };
  
             try {
@@ -830,19 +836,12 @@ export const ProfilePage = {
             
             // Steamer ID = 16
             const stasisCard = document.getElementById('stasis-card');
-            const otherElements = document.querySelectorAll('.element-card:not(.special-stasis)');
             
             if (id === 16) {
                 stasisCard.style.display = 'flex';
-                stasisCard.classList.add('selected');
-                otherElements.forEach(el => {
-                    el.style.display = 'none';
-                    el.classList.remove('selected');
-                });
             } else {
                 stasisCard.style.display = 'none';
                 stasisCard.classList.remove('selected');
-                otherElements.forEach(el => el.style.display = 'flex');
             }
         };
 
@@ -891,20 +890,18 @@ export const ProfilePage = {
     },
 
     toggleSelection: (element, type) => {
-        const parent = element.parentElement;
-        parent.querySelectorAll('.dmg-card').forEach(el => el.classList.remove('selected'));
-        element.classList.add('selected');
-        document.getElementById('char-dmg-type').value = element.dataset.value;
+        if (element.classList.contains('selected')) {
+            element.classList.remove('selected');
+        } else {
+            element.classList.add('selected');
+        }
     },
 
     toggleElement: (element) => {
         if (element.classList.contains('selected')) {
             element.classList.remove('selected');
         } else {
-            const selected = document.querySelectorAll('.element-card.selected').length;
-            if (selected < 3) {
-                element.classList.add('selected');
-            }
+            element.classList.add('selected');
         }
     }
 };

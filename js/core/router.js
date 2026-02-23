@@ -72,14 +72,29 @@ export const Router = {
             this.params.id = null;
         }
 
+        let token = null;
         if (window.location.search.includes('token=')) {
             const urlParams = new URLSearchParams(window.location.search);
-            const token = urlParams.get('token');
-            if (token) {
-                localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
-                this.navigateTo('/profile');
-                return;
+            token = urlParams.get('token');
+        } else if (window.location.hash.includes('token=')) {
+            // Check inside the hash as well, e.g. #?token=...
+            const hashParts = window.location.hash.split('?');
+            if (hashParts.length > 1) {
+                const urlParams = new URLSearchParams('?' + hashParts[1]);
+                token = urlParams.get('token');
             }
+        }
+
+        if (token) {
+            localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
+            try {
+                const { Header } = await import('../components/Header.js');
+                await Header.update();
+            } catch (e) {
+                console.error("Error updating Header:", e);
+            }
+            this.navigateTo('/profile');
+            return;
         }
 
         const page = routes[path] || routes['/'];

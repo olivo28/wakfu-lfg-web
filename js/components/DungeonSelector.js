@@ -49,13 +49,13 @@ export const DungeonSelector = {
             }
 
             const filtered = DungeonSelector.dungeons.filter(d => 
-                d.isDungeon === true && (d.name[lang] || d.name['es']).toLowerCase().includes(query)
+                (d.name[lang] || d.name['es']).toLowerCase().includes(query)
             ).slice(0, 8);
 
             if (filtered.length > 0) {
                 list.innerHTML = filtered.map(d => `
                     <div class="dung-item" data-id="${d.id}">
-                        <img src="assets/mazmos/${d.id}.png" class="dung-icon-mini" onerror="this.src='assets/classes/icons/8.png'">
+                        <img src="${d.isDungeon === false ? 'assets/mazmos/default.png' : `assets/mazmos/${d.id}.png`}" class="dung-icon-mini" onerror="this.src='assets/classes/icons/8.png'">
                         <div class="dung-info">
                             <span class="dung-name">${d.name[lang] || d.name['es']}</span>
                             <span class="dung-meta">${i18n.t('ui.level').toUpperCase()} ${d.min_lvl}</span>

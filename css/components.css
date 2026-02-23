@@ -749,8 +749,7 @@
 
 .char-card-tech:hover .char-server-text {
     border-color: var(--accent);
-    color: var(--text-main);
-    background: rgba(59, 142, 208, 0.15);
+    filter: brightness(1.2);
 }
 
 .char-stats-mini {

@@ -6,8 +6,24 @@ import { LFGModals } from '../components/LFGModals.js';
 import { Modal } from '../components/Modal.js';
 import { Socket } from '../core/Socket.js';
 
+const escapeHTML = (str) => {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+};
+
 export const GroupDetailPage = {
     group: null,
+    classes: null,
+    dungeons: null,
+    pendingRequests: [],
 
     getSEOData: async () => {
         const group = GroupDetailPage.group;
@@ -37,6 +53,19 @@ export const GroupDetailPage = {
         const groupId = Router.params.id;
         if (!groupId) return `<div class="error-state">${i18n.t('lfg.error_no_group_id')}</div>`;
 
+        return `
+            <div class="page-container group-detail-layout fade-in" id="group-detail-root">
+                <div class="initial-loader" style="height: 50vh; display: flex; align-items: center; justify-content: center;">
+                    <div class="wakfu-spinner"></div>
+                </div>
+            </div>
+        `;
+    },
+
+    afterRender: async () => {
+        const groupId = Router.params.id;
+        const container = document.getElementById('group-detail-root');
+
         try {
             const [groupRes, classes, dungeons] = await Promise.all([
                 API.getGroup(groupId),
@@ -47,7 +76,6 @@ export const GroupDetailPage = {
             GroupDetailPage.classes = classes;
             GroupDetailPage.dungeons = dungeons;
 
-            // Cargar solicitudes pendientes si el usuario es líder
             const user = Header.getUserFromToken();
             const isLeaderCheck = user && String(user.id) === String(groupRes.leader_id);
             if (isLeaderCheck) {
@@ -55,18 +83,46 @@ export const GroupDetailPage = {
                 GroupDetailPage.pendingRequests = Array.isArray(allRequests)
                     ? allRequests.filter(r => (String(r.groupId || r.group_id) === String(groupId)) && r.status === 'pending')
                     : [];
-                console.debug('[GroupDetailPage] Leader detected. Pending requests:', GroupDetailPage.pendingRequests, 'from total:', allRequests.length);
             } else {
                 GroupDetailPage.pendingRequests = [];
             }
-        } catch (e) {
-            return `<div class="error-state">${i18n.t('lfg.error_load_group', { error: e.message })}</div>`;
-        }
 
-        const group = GroupDetailPage.group;
-        const classes = GroupDetailPage.classes;
-        const dungeons = GroupDetailPage.dungeons;
-        const pendingRequests = GroupDetailPage.pendingRequests || [];
+            if (container) {
+                container.innerHTML = GroupDetailPage.renderContent(
+                    GroupDetailPage.group, 
+                    GroupDetailPage.classes, 
+                    GroupDetailPage.dungeons, 
+                    GroupDetailPage.pendingRequests
+                );
+                
+                GroupDetailPage.bindListeners();
+            }
+
+            if (groupId) {
+                Socket.joinGroup(groupId);
+                Socket.off('group_update');
+                Socket.on('group_update', async (data) => {
+                    if (data.type === 'group_closed') {
+                        Router.navigateTo('/finder');
+                        return;
+                    }
+                    await GroupDetailPage.refresh();
+                });
+
+                Socket.off('request_processed');
+                Socket.on('request_processed', async (data) => {
+                    if (String(data.groupId) === String(groupId)) {
+                        await GroupDetailPage.refresh();
+                    }
+                });
+            }
+        } catch (e) {
+            console.error('[GroupDetail] afterRender error:', e);
+            if (container) container.innerHTML = `<div class="error-state">${i18n.t('lfg.error_load_group', { error: e.message })}</div>`;
+        }
+    },
+
+    renderContent: (group, classes, dungeons, pendingRequests) => {
         const data = group.data || group;
         const members = data.members || [];
         const user = Header.getUserFromToken();
@@ -76,11 +132,9 @@ export const GroupDetailPage = {
         );
         const lang = i18n.currentLang;
 
-        // Buscar info de mazmorra
         const dungInfo = dungeons.find(d => d.id == data.dungeonId);
         const dungeonName = dungInfo?.name?.[lang] || dungInfo?.name?.['es'] || data.dungeonName?.[lang] || '...';
         
-        // Datos de dificultad
         const stasis = data.difficulty?.stasis || 1;
         const isModulated = data.difficulty?.is_modulated || false;
         const levelDisplay = isModulated && dungInfo ? dungInfo.modulated : (data.level || dungInfo?.min_lvl || '???');
@@ -97,14 +151,13 @@ export const GroupDetailPage = {
                     <div class="header-banner">
                         <img src="assets/mazmos/${data.dungeonId}.png" class="banner-img-tech" onerror="this.src='assets/backgrounds/default_dungeon.jpg'">
                         <div class="header-overlay">
-                            <h1 class="label-tech">${(data.title || dungeonName).toUpperCase()}</h1>
-                            <p class="text-dim">${dungeonName} — ${i18n.t('profile.level_short')} ${levelDisplay} ${isModulated ? `(${i18n.t('dungeon.modulated')})` : ''}</p>
+                            <h1 class="label-tech">${escapeHTML(data.title || dungeonName).toUpperCase()}</h1>
+                            <p class="text-dim">${escapeHTML(dungeonName)} — ${i18n.t('profile.level_short')} ${levelDisplay} ${isModulated ? `(${i18n.t('dungeon.modulated')})` : ''}</p>
                         </div>
                     </div>
                 </header>
 
                 <div class="detail-grid">
-                    <!-- MIEMBROS - COLUMNA IZQUIERDA -->
                     <section class="detail-section members-section">
                         <h3 class="label-tech section-title">${i18n.t('lfg.team_actual', { current: members.length, total: dungInfo?.players || 6 })}</h3>
                         <div class="full-body-team">
@@ -114,7 +167,7 @@ export const GroupDetailPage = {
                                         <img src="${getBodyAsset(m)}" class="ak-breed-render ak-breed-direction-0">
                                     </div>
                                     <div class="char-info-box">
-                                        <span class="char-name">${m.name}</span>
+                                        <span class="char-name">${escapeHTML(m.name)}</span>
                                         <div class="char-details-mini">
                                             <span class="mini-lvl">${i18n.t('profile.level_short')} ${m.level || 0} ${isModulated && dungInfo ? `[${dungInfo.modulated}]` : ''}</span>
                                         </div>
@@ -136,7 +189,6 @@ export const GroupDetailPage = {
                                             badge = `<span class="leader-crown-badge" title="${i18n.t('lfg.leader')}">👑</span>`;
                                         }
                                         
-                                        // Leader char leaving = leadership transfer button
                                         if (isMyChar && isLeaderChar) {
                                             return badge + `
                                                 <button class="btn-kick-member btn-leave-member" data-id="${m.id}" title="${i18n.t('lfg.leader_leave')}">
@@ -170,14 +222,13 @@ export const GroupDetailPage = {
                         </div>
                     </section>
 
-                    <!-- INFO Y GESTIÓN - COLUMNA DERECHA -->
                     <aside class="detail-aside">
                         <div class="info-card-tech">
                             <h3 class="label-tech">${i18n.t('lfg.req_info')}</h3>
                             
                             <div class="info-row">
                                 <span class="info-label">${i18n.t('lfg.leader').toUpperCase()}:</span>
-                                <span class="info-val">${group.creator_name || '...'}</span>
+                                <span class="info-val">${escapeHTML(group.creator_name || '...')}</span>
                             </div>
                             <div class="info-row">
                                 <span class="info-label">${i18n.t('ui.server').toUpperCase()}:</span>
@@ -227,7 +278,6 @@ export const GroupDetailPage = {
                             </div>` : ''}
                         </div>
 
-                        <!-- ACCIONES DE LÍDER (Aprobar/Cerrar) -->
                         ${isLeader ? `
                             <div class="leader-panel-tech">
                                 <h3 class="label-tech">${i18n.t('lfg.req_pending')}</h3>
@@ -241,7 +291,7 @@ export const GroupDetailPage = {
                                         <div class="mini-req-item ${isMyOwnRequest ? 'own-request' : ''}">
                                             <img src="assets/classes/emote/${classId}${gender}.png" class="emote-mini">
                                             <div class="mini-req-info">
-                                                <span class="mini-name">${ch.name || '???'} ${isMyOwnRequest ? `<small>(${i18n.t('ui.me')})</small>` : ''}</span>
+                                                <span class="mini-name">${escapeHTML(ch.name || '???')} ${isMyOwnRequest ? `<small>(${i18n.t('ui.me')})</small>` : ''}</span>
                                                 <span class="mini-lvl">${i18n.t('profile.level_short')} ${ch.level || '?'}</span>
                                             </div>
                                             <div class="mini-req-actions">
@@ -265,7 +315,6 @@ export const GroupDetailPage = {
                             </div>
                         ` : ''}
 
-                        <!-- SOLICITUDES ENVIADAS (Solo no-líderes, ya que el líder se ve en la cola de arriba) -->
                         ${(!isLeader && group.userPendingRequests && group.userPendingRequests.length > 0) ? `
                             <div class="leader-panel-tech">
                                 <h3 class="label-tech" data-i18n="lfg.sent_requests">${(i18n.t('lfg.sent_requests')).toUpperCase()}</h3>
@@ -278,7 +327,7 @@ export const GroupDetailPage = {
                                         <div class="mini-req-item">
                                             <img src="assets/classes/emote/${classId}${gender}.png" class="emote-mini">
                                             <div class="mini-req-info">
-                                                <span class="mini-name">${ch.name || '???'}</span>
+                                                <span class="mini-name">${escapeHTML(ch.name || '???')}</span>
                                                 <span class="mini-lvl" data-i18n="lfg.status_pending">${i18n.t('lfg.status_pending').toUpperCase()}</span>
                                             </div>
                                             <div class="mini-req-actions">
@@ -293,7 +342,6 @@ export const GroupDetailPage = {
                             </div>
                         ` : ''}
 
-                        <!-- BOTÓN DE UNIRSE (Visible para todos si hay hueco) -->
                         ${members.length < (dungInfo?.players || 6) ? `
                             <div class="action-panel-tech" style="margin-top: ${isLeader || (group.userPendingRequests?.length > 0) ? '10px' : '0'}">
                                 <button class="btn btn-accent btn-block btn-join-detail" data-id="${group.id}">
@@ -307,48 +355,7 @@ export const GroupDetailPage = {
         `;
     },
 
-    refresh: async () => {
-        if (Router.currentPath !== '/group') return;
-        const app = document.getElementById('app');
-        if (!app) return;
-        try {
-            const html = await GroupDetailPage.render();
-            app.innerHTML = html;
-            await GroupDetailPage.afterRender();
-        } catch (e) {
-            console.error('[GroupDetail] Refresh error:', e);
-        }
-    },
-
-    afterRender: async () => {
-        const groupId = Router.params.id;
-        console.log("🛠️ [GroupDetail] API.deleteGroup status:", typeof API.deleteGroup);
-        if (groupId) {
-            Socket.joinGroup(groupId);
-            
-            // Listener para refrescar cuando el servidor avise de cambios en este grupo
-            Socket.off('group_update'); // Evitar duplicidad
-            Socket.on('group_update', async (data) => {
-                console.log("🔄 [GroupDetail] Cambio detectado via Socket:", data.type);
-                if (data.type === 'group_closed') {
-                    console.log("🚪 [GroupDetail] Grupo cerrado, redirigiendo...");
-                    Router.navigateTo('/finder');
-                    return;
-                }
-                await GroupDetailPage.refresh();
-            });
-
-            // Listener específico para el aspirante (si su solicitud fue procesada)
-            Socket.off('request_processed');
-            Socket.on('request_processed', async (data) => {
-                if (String(data.groupId) === String(groupId)) {
-                    console.log("🎯 [GroupDetail] Tu solicitud ha sido procesada:", data.status);
-                    await GroupDetailPage.refresh();
-                }
-            });
-        }
-
-        // Event listeners here
+    bindListeners: () => {
         document.querySelectorAll('.btn-accept-inline').forEach(btn => {
             btn.onclick = async () => {
                 const id = btn.dataset.id;
@@ -423,10 +430,19 @@ export const GroupDetailPage = {
             if (!await Modal.confirm(i18n.t('lfg.confirm_finish'))) return;
             try {
                 await API.deleteGroup(GroupDetailPage.group.id, true);
-                // Al cerrar el grupo, Router detectará el group_closed via socket o simplemente redirigimos
                 Router.navigateTo('/finder');
                 await Modal.info(i18n.t('lfg.group_closed_ok'));
             } catch (err) { await Modal.error(err.message); }
         });
+    },
+
+    refresh: async () => {
+        if (Router.currentPath !== '/group') return;
+        const app = document.getElementById('app');
+        if (!app) return;
+        
+        // Re-render the shell and then the content
+        app.innerHTML = await GroupDetailPage.render();
+        await GroupDetailPage.afterRender();
     }
 };

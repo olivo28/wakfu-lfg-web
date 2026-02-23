@@ -5,6 +5,19 @@ import { Header } from './Header.js';
 // Cache de IDs de personajes del usuario (inyectado desde GroupFinderPage)
 let _myCharIds = new Set();
 
+const escapeHTML = (str) => {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+};
+
 export const GroupCard = {
     // Inyectar los IDs de personajes del usuario
     setMyCharIds: (ids) => { _myCharIds = new Set(ids.map(String)); },
@@ -43,9 +56,12 @@ export const GroupCard = {
 
         return `
             <div class="group-card-clean hover-tilt" style="cursor: pointer;" data-link href="/group/${group.id}">
-                ${isLeader ? `<button class="btn-edit-tech" data-id="${group.id}" title="${i18n.t('lfg.edit_title')}" onclick="event.stopPropagation();">✏️</button>` : ''}
+                ${isLeader ? `<div class="group-leader-actions">
+                    <button class="btn-edit-tech" data-id="${group.id}" title="${i18n.t('lfg.edit_title')}" onclick="event.stopPropagation();">✏️</button>
+                    <button class="btn-delete-tech" data-id="${group.id}" title="${i18n.t('ui.delete')}" onclick="event.stopPropagation(); if(confirm('${i18n.t('lfg.confirm_delete_group')}')) { import('../core/api.js').then(m => m.API.deleteGroup(${group.id}, true).then(() => window.location.reload())); }">🗑️</button>
+                </div>` : ''}
                 <div class="banner-pure">
-                    <img src="assets/mazmos/${dungeonId}.png" class="img-full" onerror="this.src='assets/backgrounds/default_dungeon.jpg'">
+                    <img src="assets/mazmos/${dungeonId}.png" class="img-full" onerror="this.src='assets/mazmos/default.png'">
                 </div>
                 <div class="info-tech-box">
                     <div class="tech-header">
@@ -58,10 +74,27 @@ export const GroupCard = {
                     <!-- Nombre y Nivel -->
                     <div class="tech-main">
                         <div class="dung-title-row">
-                            <span class="room-title-text">${data.title || (data.dungeonName ? (data.dungeonName[lang] || data.dungeonName['es']) : '...')}</span>
-                            <span class="dung-name-text">${data.title ? (data.dungeonName ? (data.dungeonName[lang] || data.dungeonName['es']) : '...') : '&nbsp;'}</span>
+                            <span class="room-title-text">${escapeHTML(data.title) || (data.dungeonName ? escapeHTML(data.dungeonName[lang] || data.dungeonName['es']) : '...')}</span>
+                            <span class="dung-name-text">${data.title ? (data.dungeonName ? escapeHTML(data.dungeonName[lang] || data.dungeonName['es']) : '...') : '&nbsp;'}</span>
                         </div>
-                        <span class="lvl-text">${i18n.t('profile.level_short')} ${level}</span>
+                        <div class="tech-meta-row" style="display:flex; gap:5px; align-items:center;">
+                            <span class="lvl-text">${i18n.t('profile.level_short')} ${level}</span>
+                            ${data.missionOnly ? `<span class="chip-mod-tech" title="${i18n.t('lfg.mission_only')}" style="color: #ffd700; border-color: #ffd700;">M</span>` : ''}
+                            ${data.requiresMechanics ? `<span class="chip-mod-tech" title="${i18n.t('lfg.requires_mechanics')}" style="color: #ff4d4d; border-color: #ff4d4d;">⚙️</span>` : ''}
+                            ${data.languages && data.languages.length > 0 ? `<div class="languages-mini-list" style="display:flex; gap:3px; margin-left: auto;">
+                                ${data.languages.map(l => {
+                                    const flags = {
+                                        'PT': 'https://flagcdn.com/w80/br.png',
+                                        'ES': 'https://flagcdn.com/w80/es.png',
+                                        'EN': 'https://flagcdn.com/w80/us.png',
+                                        'FR': 'https://flagcdn.com/w80/fr.png'
+                                    };
+                                    return `<span class="lang-badge-micro" style="display: flex; align-items: center; border: 1px solid var(--border-tech); padding: 2px 4px; border-radius: 2px; gap: 4px;" title="${l}">
+                                        <img src="${flags[l]}" alt="${l}" style="width: 12px; border-radius: 1px; flex-shrink: 0;"><span style="font-size: 9px; line-height: 1;">${l}</span>
+                                    </span>`;
+                                }).join('')}
+                            </div>` : ''}
+                        </div>
                     </div>
 
                     <!-- Miembros -->
@@ -74,14 +107,14 @@ export const GroupCard = {
                                     const gender = String(m.gender || 0);
                                     return `
                                         <div class="member-unit-mini">
-                                            <img src="assets/classes/emote/${paddedId}${gender}.png" class="emote-mini" title="${m.name || '...'}">
-                                            <span class="member-name-tag">${m.name}</span>
+                                            <img src="assets/classes/emote/${paddedId}${gender}.png" class="emote-mini" title="${escapeHTML(m.name) || '...'}">
+                                            <span class="member-name-tag">${escapeHTML(m.name)}</span>
                                         </div>
                                     `;
                                 }).join('')}
                             </div>
                         </div>
-                        <span class="count-text">${members.length}/${data.capacity || 6}</span>
+                        <span class="count-text">${members.length}/${data.capacity || data.maxMembers || 6}</span>
                     </div>
  
                     <!-- Roles y Requisitos -->

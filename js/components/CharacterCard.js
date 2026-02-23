@@ -1,6 +1,19 @@
 import { i18n } from '../core/i18n.js';
 import { API } from '../core/api.js';
 
+const escapeHTML = (str) => {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+};
+
 export const CharacterCard = {
     render: (char, modulatedLevel = null) => {
         // Obtenemos los datos de la clase desde el JSON maestro
@@ -45,8 +58,8 @@ export const CharacterCard = {
                 <!-- Info Técnica -->
                 <div class="char-content">
                     <div class="char-info-main">
-                        <h3 class="char-name-text">${char.name}</h3>
-                        <span class="char-server-text srv-${char.server.toLowerCase()}">${char.server}</span>
+                        <h3 class="char-name-text">${escapeHTML(char.name)}</h3>
+                        <span class="char-server-text srv-${char.server.toLowerCase()}">${escapeHTML(char.server)}</span>
                     </div>
 
                     <div class="char-stats-mini">
@@ -54,7 +67,7 @@ export const CharacterCard = {
                             <span class="label-tech" style="font-size: 8px;" data-i18n="roles.title">ROLES</span>
                             <div class="roles-chips-container">
                                 ${char.roles.map(role => `
-                                    <img src="assets/roles/${role}.png" class="role-icon-mini" title="${role}">
+                                    <img src="assets/roles/${role}.png" class="role-icon-mini" title="${i18n.t('roles.' + role)}">
                                 `).join('')}
                             </div>
                         </div>
@@ -63,7 +76,7 @@ export const CharacterCard = {
                             <span class="label-tech" style="font-size: 8px;" data-i18n="profile.elements_short">ELEMENTOS</span>
                             <div class="elements-chips-container">
                                 ${char.elements.map(el => `
-                                    <img src="assets/element/${el}.png" class="element-icon-mini" title="${el}">
+                                    <img src="assets/element/${el}.png" class="element-icon-mini" title="${i18n.t('elements.' + el)}">
                                 `).join('')}
                             </div>
                         </div>
@@ -98,11 +111,13 @@ export const CharacterCard = {
             : char.level;
  
         return `
-            <div class="char-card-compact">
-                <img src="assets/classes/emote/${paddedId}${char.gender}.png" class="char-emote-mini">
-                <div class="char-info-mini">
-                    <span class="char-name-mini">${char.name}</span>
-                    <span class="char-detail-mini">${i18n.t('profile.level_short')} ${levelDisplay} • ${className}</span>
+            <div class="compact-char-card" data-id="${char.id}">
+                <div class="compact-char-left">
+                    <img src="assets/classes/emote/${paddedId}${char.gender}.png" class="emote-mini" title="${className}">
+                    <div class="compact-info-col">
+                        <span class="compact-name">${escapeHTML(char.name)}</span>
+                        <span class="compact-lvl">${i18n.t('profile.level_short')} ${levelDisplay}</span>
+                    </div>
                 </div>
                 <div class="char-roles-mini">
                     ${char.roles.map(role => `

@@ -8,6 +8,7 @@ export const DungeonListPage = {
         players: 'all',
         level: 'all',
         status: 'all',
+        type: 'all', // 'all', 'dungeon', 'rift'
         sort: 'desc'  // 'desc' = highest level first, 'asc' = lowest first
     },
 
@@ -56,6 +57,15 @@ export const DungeonListPage = {
                         <div class="filter-tags" id="filter-status">
                             <button class="filter-tag active" data-val="all" data-i18n="ui.all"></button>
                             <button class="filter-tag" data-val="active" data-i18n="filters.with_groups"></button>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="label-tech" data-i18n="filters.type">Tipo</label>
+                        <div class="filter-tags" id="filter-type">
+                            <button class="filter-tag active" data-val="all" data-i18n="ui.all"></button>
+                            <button class="filter-tag" data-val="dungeon" data-i18n="dungeons.dungeon">Mazmorra</button>
+                            <button class="filter-tag" data-val="rift" data-i18n="dungeons.breach">Brecha</button>
                         </div>
                     </div>
 
@@ -120,8 +130,8 @@ export const DungeonListPage = {
                 }
             });
 
-            // Base list (filtered for dungeons only)
-            const baseDungeons = dungeons.filter(d => d.isDungeon === true);
+            // Base list
+            const baseDungeons = dungeons;
 
             const renderDungeons = () => {
                 const lang = i18n.currentLang;
@@ -146,6 +156,10 @@ export const DungeonListPage = {
                     if (filters.status === 'active') {
                         if (!groupsCount[d.id]) return false;
                     }
+
+                    // 5. Type (Dungeon vs Rift)
+                    if (filters.type === 'dungeon' && d.isDungeon === false) return false;
+                    if (filters.type === 'rift' && d.isDungeon === true) return false;
 
                     return true;
                 }).sort((a, b) => {
@@ -180,7 +194,7 @@ export const DungeonListPage = {
                                     <span class="badge-level">${i18n.t('ui.level')} ${d.min_lvl}</span>
                                     <span class="badge-modulated" title="${i18n.t('dungeons.mod_level')}"><i class="icon-modulated"></i> ${d.modulated}</span>
                                 </div>
-                                <img src="assets/mazmos/${d.id}.png" alt="${name}" loading="lazy" onerror="this.src='assets/images/placeholder_dungeon.png'">
+                                <img src="${d.isDungeon === false ? 'assets/mazmos/default.png' : `assets/mazmos/${d.id}.png`}" alt="${name}" loading="lazy" onerror="this.src='assets/images/placeholder_dungeon.png'">
                                 ${count > 0 ? `
                                     <div class="active-badge animate-pulse">
                                         ${count === 1 
@@ -272,6 +286,7 @@ export const DungeonListPage = {
             setupFilterTags('filter-players', 'players');
             setupFilterTags('filter-levels', 'level');
             setupFilterTags('filter-status', 'status');
+            setupFilterTags('filter-type', 'type');
             setupFilterTags('filter-sort', 'sort');
 
         } catch (error) {
