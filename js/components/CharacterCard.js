@@ -2,6 +2,7 @@ import { i18n } from '../core/i18n.js';
 import { API } from '../core/api.js';
 import { CONFIG } from '../config.js';
 
+import { Modal } from './Modal.js';
 const escapeHTML = (str) => {
     if (!str) return '';
     return String(str).replace(/[&<>'"]/g, 
@@ -112,13 +113,11 @@ export const CharacterCard = {
             : char.level;
  
         return `
-            <div class="compact-char-card" data-id="${char.id}">
-                <div class="compact-char-left">
-                    <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${char.gender}.png" class="emote-mini" title="${className}">
-                    <div class="compact-info-col">
-                        <span class="compact-name">${escapeHTML(char.name)}</span>
-                        <span class="compact-lvl">${i18n.t('profile.level_short')} ${levelDisplay}</span>
-                    </div>
+            <div class="char-card-compact" data-id="${char.id}">
+                <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${char.gender}.png" class="char-emote-mini" title="${className}">
+                <div class="char-info-mini">
+                    <span class="char-name-mini">${escapeHTML(char.name)}</span>
+                    <span style="font-size: 11px; color: var(--text-dim); font-weight: 700;">${i18n.t('profile.level_short')} ${levelDisplay}</span>
                 </div>
                 <div class="char-roles-mini">
                     ${char.roles.map(role => `
@@ -127,5 +126,79 @@ export const CharacterCard = {
                 </div>
             </div>
         `;
+    }
+};
+
+/**
+ * Helper for LFG Chat interactions (Whisper / Invite)
+ */
+export const LfgChatHelper = {
+    /**
+     * Renders small action buttons for character cards
+     * @param {Object} char Character object
+     * @param {string} dungeonName Name of the current dungeon
+     * @param {string} groupTitle Title of the lfg group
+     * @param {string} type 'leader' or 'member' (who is doing the whisper)
+     * @param {string} leaderName Optional override for leader name
+     * @param {string} myCharName Optional override for sender name
+     */
+    renderChatControls: (char, dungeonName, groupTitle, type = 'leader', leaderName = '', myCharName = '') => {
+        if (!char || !char.name) return '';
+
+        const whisperMsg = LfgChatHelper.getWhisperMessage(char.name, dungeonName, groupTitle, type, leaderName, myCharName);
+        const inviteCmd = `/invite "${char.name}"`;
+
+        return `
+            <div class="chat-controls-tech">
+                <button class="btn-chat-action btn-copy-whisper" 
+                        data-text="${escapeHTML(whisperMsg)}" 
+                        title="${i18n.t('lfg_actions.copy_whisper')}">
+                    💬
+                </button>
+                ${type === 'leader' ? `
+                <button class="btn-chat-action btn-copy-invite" 
+                        data-text="${escapeHTML(inviteCmd)}" 
+                        title="${i18n.t('lfg_actions.copy_invite')}">
+                    ➕
+                </button>
+                ` : ''}
+            </div>
+        `;
+    },
+
+    /**
+     * Generates a pre-formatted whisper message based on context
+     */
+    getWhisperMessage: (charName, dungeonName, groupTitle, type = 'leader', leaderName = '', myCharName = '') => {
+        let rawMsg = '';
+        if (type === 'leader') {
+            rawMsg = i18n.t('lfg_actions.leader_whisper_msg', { name: charName, dungeon: dungeonName, groupTitle: groupTitle });
+        } else {
+            rawMsg = i18n.t('lfg_actions.member_whisper_msg', { 
+                leaderName: leaderName, 
+                myCharName: myCharName, 
+                dungeon: dungeonName,
+                groupTitle: groupTitle
+            });
+        }
+        return `/w "${charName}" ${rawMsg}`;
+    },
+
+    /**
+     * Copies text to clipboard and shows a toast
+     */
+    copyToClipboard: async (text, title = null) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            
+            // Usamos el sistema de modales propio
+            if (Modal && Modal.info) {
+                await Modal.info(`${i18n.t('ui.copied_to_clipboard') || 'Copied to clipboard'}: ${text}`, title || i18n.t("lfg_actions.copy_whisper"), "modal-copy-notification");
+            } else {
+                alert(`${i18n.t('ui.copied_to_clipboard') || 'Copiado'}: ${text}`);
+            }
+        } catch (err) {
+            console.error('Failed to copy!', err);
+        }
     }
 };

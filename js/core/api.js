@@ -103,9 +103,9 @@ export const API = {
     // ==========================================================================
     // 3. GESTIÓN DE SOLICITUDES (LFG)
     // ==========================================================================
-    joinGroup: (groupId, characterId) => API.request(`/lfg/${groupId}/join`, {
+    joinGroup: (groupId, characterId, characterIds = null) => API.request(`/lfg/${groupId}/join`, {
         method: 'POST',
-        body: JSON.stringify({ characterId })
+        body: JSON.stringify({ characterId, characterIds })
     }),
 
     getSentRequests: () => API.request('/lfg/requests/sent'),

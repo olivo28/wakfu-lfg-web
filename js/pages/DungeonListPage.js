@@ -38,6 +38,7 @@ export const DungeonListPage = {
                         <div class="filter-tags" id="filter-players">
                             <button class="filter-tag active" data-val="all" data-i18n="ui.all">${i18n.t('ui.all')}</button>
                             <button class="filter-tag" data-val="3">${i18n.t('ui.players_count', {count: 3})}</button>
+                            <button class="filter-tag" data-val="4">${i18n.t('ui.players_count', {count: 4})}</button>
                             <button class="filter-tag" data-val="6">${i18n.t('ui.players_count', {count: 6})}</button>
                         </div>
                     </div>
@@ -277,7 +278,7 @@ export const DungeonListPage = {
             });
 
             // Helper for Filter Tags
-            const setupFilterTags = (containerId, filterKey) => {
+            const setupFilterTags = (containerId, filterKey, onChangeCallback) => {
                 const container = document.getElementById(containerId);
                 if(!container) return;
                 const buttons = container.querySelectorAll('.filter-tag');
@@ -290,6 +291,10 @@ export const DungeonListPage = {
                         btn.classList.add('active');
                         // Update filter state
                         filters[filterKey] = btn.dataset.val;
+                        
+                        // Fire callback if any (before re-rendering so state matches)
+                        if (onChangeCallback) onChangeCallback(btn.dataset.val);
+                        
                         renderDungeons();
                     });
                 });
@@ -298,7 +303,34 @@ export const DungeonListPage = {
             setupFilterTags('filter-players', 'players');
             setupFilterTags('filter-levels', 'level');
             setupFilterTags('filter-status', 'status');
-            setupFilterTags('filter-type', 'type');
+            
+            let currentTypeFilter = 'all';
+            let previousPlayerFilter = 'all';
+            
+            setupFilterTags('filter-type', 'type', (val) => {
+                const playerContainer = document.getElementById('filter-players');
+                if (!playerContainer) return;
+
+                if (val === 'rift' && currentTypeFilter !== 'rift') {
+                    previousPlayerFilter = filters.players;
+                    
+                    const playerBtns = playerContainer.querySelectorAll('.filter-tag');
+                    playerBtns.forEach(b => b.classList.remove('active'));
+                    const btn4 = playerContainer.querySelector('.filter-tag[data-val="4"]');
+                    if (btn4) btn4.classList.add('active');
+                    
+                    filters.players = '4';
+                } else if (val !== 'rift' && currentTypeFilter === 'rift') {
+                    filters.players = previousPlayerFilter;
+                    
+                    const playerBtns = playerContainer.querySelectorAll('.filter-tag');
+                    playerBtns.forEach(b => b.classList.remove('active'));
+                    const btnPrev = playerContainer.querySelector(`.filter-tag[data-val="${previousPlayerFilter}"]`);
+                    if (btnPrev) btnPrev.classList.add('active');
+                }
+                currentTypeFilter = val;
+            });
+            
             setupFilterTags('filter-sort', 'sort');
 
         } catch (error) {

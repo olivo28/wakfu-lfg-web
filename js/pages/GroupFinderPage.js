@@ -66,20 +66,12 @@ export const GroupFinderPage = {
                     </div>
 
                     <div class="filter-group">
-                        <label class="label-tech" data-i18n="filters.membership">${i18n.t('filters.membership')}</label>
-                        <select id="filter-membership" class="input-tech">
-                            <option value="all" data-i18n="ui.all">${i18n.t('ui.all')}</option>
-                            <option value="joined" data-i18n="filters.with_groups">${i18n.t('filters.with_groups')}</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
                         <label class="label-tech" data-i18n="filters.type">${i18n.t('filters.type')}</label>
-                        <select id="filter-type" class="input-tech">
-                            <option value="all" data-i18n="ui.all">${i18n.t('ui.all')}</option>
-                            <option value="dungeon" data-i18n="dungeons.dungeon">${i18n.t('dungeons.dungeon')}</option>
-                            <option value="breach" data-i18n="dungeons.breach">${i18n.t('dungeons.breach')}</option>
-                        </select>
+                        <div class="filter-tags" id="filter-type-tags">
+                            <button class="filter-tag active" data-val="all" data-i18n="ui.all">${i18n.t('ui.all')}</button>
+                            <button class="filter-tag" data-val="dungeon" data-i18n="dungeons.dungeon">${i18n.t('dungeons.dungeon')}</button>
+                            <button class="filter-tag" data-val="breach" data-i18n="dungeons.breach">${i18n.t('dungeons.breach')}</button>
+                        </div>
                     </div>
 
                     <div class="filter-group search-dungeon">
@@ -110,8 +102,6 @@ export const GroupFinderPage = {
 
     afterRender: async () => {
         const listContainer = document.getElementById('groups-list');
-        const filterLevel = document.getElementById('filter-level');
-        const filterServer = document.getElementById('filter-server');
         const searchInput = document.getElementById('group-search');
 
         // Check for 'dungeon' param in URL
@@ -182,36 +172,19 @@ export const GroupFinderPage = {
         };
  
         const applyFilters = () => {
-            const minLvl = filterLevel.value === 'all' ? 0 : parseInt(filterLevel.value);
+            const filterLevelVal = document.getElementById('filter-level')?.value || 'all';
+            const minLvl = filterLevelVal === 'all' ? 0 : parseInt(filterLevelVal);
             const query = normalize(searchInput.value.trim());
             const lang = i18n.currentLang;
-            const filterMbrValue = document.getElementById('filter-membership')?.value || 'all';
-            const filterType = document.getElementById('filter-type')?.value || 'all';
+            const filterType = document.querySelector('#filter-type-tags .filter-tag.active')?.dataset.val || 'all';
             
-            const currentActor = Header.getUserFromToken();
-            const currUserId = currentActor ? String(currentActor.id) : null;
-
             const filtered = GroupFinderPage.allGroups.filter(group => {
                 const data = group.data || group;
                 const members = data.members || [];
                 
-                const server = filterServer.value;
+                const server = document.getElementById('filter-server')?.value || 'all';
                 const matchServer = server === 'all' || data.server === server;
                 const matchLevel = minLvl === 0 || (data.level >= minLvl && data.level <= minLvl + 14);
-                
-                // Filtro de membrecía: comparar por character IDs (no por user account)
-                let matchMember = true;
-                const myCharIds = GroupFinderPage.myCharIds || new Set();
-                const userInGroup = members.some(m => m && myCharIds.has(String(m.id || m.charId)));
-                // isLeader: account-level check (leader_id es ID de cuenta)
-                const isLeader = currUserId && (
-                    String(group.leader_id) === currUserId ||
-                    String(data.leader_id) === currUserId
-                );
-                const hasJoined = userInGroup || isLeader;
-
-                if (filterMbrValue === 'joined') matchMember = hasJoined;
-                else if (filterMbrValue === 'not_joined') matchMember = !hasJoined;
 
                 let matchName = true;
                 if (GroupFinderPage.selectedDungeon) {
@@ -229,7 +202,7 @@ export const GroupFinderPage = {
                     || (filterType === 'dungeon' && data.isDungeon !== false)
                     || (filterType === 'breach' && data.isDungeon === false);
 
-                return matchServer && matchLevel && matchName && matchSearch && matchMember && matchType;
+                return matchServer && matchLevel && matchName && matchSearch && matchType;
             });
             
             // ... (rest of applyFilters)
@@ -295,11 +268,24 @@ export const GroupFinderPage = {
             }
         };
  
-        filterLevel.addEventListener('change', applyFilters);
-        filterServer.addEventListener('change', applyFilters);
+        const setupFilterTags = (containerId) => {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            const buttons = container.querySelectorAll('.filter-tag');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    applyFilters();
+                });
+            });
+        };
+
+        setupFilterTags('filter-type-tags');
+        
+        document.getElementById('filter-server')?.addEventListener('change', applyFilters);
+        document.getElementById('filter-level')?.addEventListener('change', applyFilters);
         searchInput.addEventListener('input', applyFilters);
-        document.getElementById('filter-membership').addEventListener('change', applyFilters);
-        document.getElementById('filter-type')?.addEventListener('change', applyFilters);
  
         // Fetch initially
         fetchGroups();
@@ -319,7 +305,7 @@ export const GroupFinderPage = {
 
         // Create group event
         document.getElementById('btn-create-group')?.addEventListener('click', () => {
-            LFGModals.openCreateGroupModal();
+            LFGModals.openCreateGroupModal(null, null, () => GroupFinderPage.loadGroups());
         });
  
         // Populate search input with dungeon name if param exists

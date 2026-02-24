@@ -1397,6 +1397,7 @@ select.input-tech {
     gap: 20px;
     min-height: auto;
     align-items: flex-start;
+    min-width: 0;
 }
 
 .detail-subtitle {
@@ -1409,9 +1410,14 @@ select.input-tech {
 }
 
 .member-list-detailed {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
+    min-width: 0;
+}
+
+.member-list-detailed .char-card-compact {
+    width: calc(50% - 4px);
 }
 
 /* Character Card Compact Styling */
@@ -1426,6 +1432,7 @@ select.input-tech {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    min-width: 0;
 }
 
 .char-card-compact::before {

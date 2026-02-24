@@ -19,20 +19,26 @@
         "title": "Título",
         "actions": "Ações",
         "save": "Salvar",
+        "update": "Atualizar",
         "edit": "Editar",
         "delete": "Excluir",
         "back": "Voltar",
+        "next": "Próximo",
         "name_required": "Nome obrigatório",
         "search_placeholder": "Pesquisar...",
         "me": "Eu",
         "leave": "Sair",
+        "copied_to_clipboard": "Copiado para a área de transferência",
         "remove": "Remover",
         "free": "Grátis",
         "key": "Chave",
         "created": "Criado",
         "updated": "Atualizado",
         "admin_mode": "Modo Admin",
-        "dismiss": "Descartar"
+        "dismiss": "Descartar",
+        "stats_online": "online",
+        "stats_active_groups": "grupos ativos",
+        "prototype_tagline": "Protótipo para a comunidade Wakfu"
     },
     "nav": {
         "find_group": "Buscar Grupo",
@@ -158,12 +164,14 @@
         "roles_sought": "Papéis Procurados",
         "group_title": "Título da sala",
         "leader": "Líder",
+        "mono_limit_reached": "O modo heróis não está disp. neste servidor. Você já tem um pedido aqui (Limite Monoconta).",
         "my_group": "Meu Grupo",
         "accept": "Aceitar",
         "reject": "Rejeitar",
         "cancel": "Cancelar",
         "pending_requests": "Pendentes",
         "resolved_requests": "Resolvidas",
+        "group_created_ok": "Grupo criado com sucesso",
         "create_title": "Criar novo grupo",
         "edit_title": "Atualizar grupo",
         "roles_title": "Papéis procurados",
@@ -184,11 +192,13 @@
         "confirm_cancel_req": "Cancelar esta solicitação?",
         "confirm_delete_group": "Excluir permanentemente este grupo?",
         "chat_languages": "Idiomas do chat",
+        "chat_lang_req": "Você deve selecionar pelo menos um idioma de chat.",
         "mission_only": "Apenas missão",
         "requires_mechanics": "Requer conhecer mecânicas",
         "mechanics_prompt_title": "Conhecimento de mecânicas necessário",
         "mechanics_prompt_desc": "Você conhece as mecânicas desta masmorra? Se você confirmar, será salvo no seu perfil.",
         "req_info": "Informação",
+        "chat_lang": "Idioma do Chat",
         "req_pending": "Solicitações pendentes",
         "req_none": "Nenhuma solicitação nova.",
         "error_no_group_id": "ID do grupo não encontrado",
@@ -215,7 +225,9 @@
         "seo_desc": "Grupo para {dungeon} (Nível {level}). Líder: {leader}. Junte-se agora!",
         "group_updated_ok": "Grupo atualizado com sucesso!",
         "delete_group": "Excluir Grupo",
-        "confirm_delete_permanent": "Tem certeza de que deseja excluir permanentemente este grupo? Esta ação não pode ser desfeita."
+        "confirm_delete_permanent": "Tem certeza de que deseja excluir permanentemente este grupo?<br>Esta ação não pode ser desfeita.",
+        "main_char": "Principal",
+        "hero_char": "Herói"
     },
     "notifs": {
         "title": "Notificações",
@@ -237,5 +249,29 @@
     "stats": {
         "created_title": "Total de grupos criados",
         "completed_title": "Masmorras completadas"
+    },
+    "stasis": {
+        "difficulty": {
+            "easy": "Fácil",
+            "normal": "Normal",
+            "hard": "Difícil",
+            "very_hard": "Muito Difícil",
+            "extreme": "Extrema"
+        }
+    },
+    "rarity": {
+        "common": "Comum",
+        "rare": "Rara",
+        "mythical": "Mítica",
+        "epic": "Épica",
+        "legendary": "Lendário"
+    },
+    "lfg_actions": {
+        "whisper": "Sussurrar",
+        "invite": "Convidar",
+        "copy_whisper": "Copiar Sussurro",
+        "copy_invite": "Copiar convite",
+        "leader_whisper_msg": "Olá {name}, sou o líder do grupo {groupTitle}. Você ainda está interessado em participar de {dungeon}?",
+        "member_whisper_msg": "Olá {leaderName}, sou {myCharName}. Estou escrevendo para pedir um convite para o grupo de {dungeon} ({groupTitle})."
     }
 }

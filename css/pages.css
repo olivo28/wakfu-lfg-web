@@ -603,24 +603,32 @@
 .filter-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
 }
 
 .filter-tag {
-    background: #2a2a2a;
-    border: 1px solid #333;
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
     color: var(--text-dim);
-    padding: 4px 10px;
-    border-radius: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
     font-size: 11px;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    flex: 1 1 auto;
+    text-align: center;
+    white-space: nowrap;
 }
 
-.filter-tag:hover,
+.filter-tag:hover {
+    background: #2a2a35;
+    color: var(--text-main);
+}
+
 .filter-tag.active {
-    background: var(--accent);
-    color: #fff;
+    background: rgba(43, 143, 255, 0.15);
+    color: var(--accent);
     border-color: var(--accent);
 }
 

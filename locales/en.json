@@ -19,20 +19,26 @@
         "title": "Title",
         "actions": "Actions",
         "save": "Save",
+        "update": "Update",
         "edit": "Edit",
         "delete": "Delete",
         "back": "Back",
+        "next": "Next",
         "name_required": "Name is required",
         "search_placeholder": "Search...",
         "me": "Me",
         "leave": "Leave",
+        "copied_to_clipboard": "Copied to clipboard",
         "remove": "Remove",
         "free": "Free",
         "key": "Key",
         "created": "Created",
         "updated": "Updated",
         "admin_mode": "Admin Mode",
-        "dismiss": "Dismiss"
+        "dismiss": "Dismiss",
+        "stats_online": "online",
+        "stats_active_groups": "active groups",
+        "prototype_tagline": "Prototype for the Wakfu community"
     },
     "nav": {
         "find_group": "Find Group",
@@ -159,12 +165,14 @@
         "roles_sought": "Roles Sought",
         "group_title": "Room Title",
         "leader": "Leader",
+        "mono_limit_reached": "Heroes mode is not avail. on this server. You already have a request here (Mono-Account Limit).",
         "my_group": "My Group",
         "accept": "Accept",
         "reject": "Reject",
         "cancel": "Cancel",
         "pending_requests": "Pending",
         "resolved_requests": "Resolved",
+        "group_created_ok": "Group successfully created",
         "create_title": "Create New Group",
         "edit_title": "Update Group",
         "roles_title": "Roles Sought",
@@ -185,6 +193,8 @@
         "confirm_cancel_req": "Cancel this request?",
         "confirm_delete_group": "Permanently delete this group?",
         "chat_languages": "Chat languages",
+        "chat_lang_req": "You must select at least one chat language.",
+        "chat_lang": "Chat Language",
         "mission_only": "Mission only",
         "requires_mechanics": "Requires knowing mechanics",
         "mechanics_prompt_title": "Mechanics knowledge required",
@@ -216,7 +226,9 @@
         "seo_desc": "Group for {dungeon} (Lvl {level}). Leader: {leader}. Join now!",
         "group_updated_ok": "Group updated successfully!",
         "delete_group": "Delete Group",
-        "confirm_delete_permanent": "Are you sure you want to PERMANENTLY delete this group? This action cannot be undone."
+        "confirm_delete_permanent": "Are you sure you want to PERMANENTLY delete this group?<br>This action cannot be undone.",
+        "main_char": "Main",
+        "hero_char": "Hero"
     },
     "notifs": {
         "title": "Notifications",
@@ -238,5 +250,28 @@
     "stats": {
         "created_title": "Total groups created",
         "completed_title": "Dungeons completed"
+    },
+    "stasis": {
+        "difficulty": {
+            "easy": "Easy",
+            "normal": "Normal",
+            "hard": "Hard",
+            "very_hard": "Very Hard",
+            "extreme": "Extreme"
+        }
+    },
+    "rarity": {
+        "common": "Common",
+        "rare": "Rare",
+        "mythical": "Mythical",
+        "legendary": "Legendary"
+    },
+    "lfg_actions": {
+        "whisper": "Whisper",
+        "invite": "Invite",
+        "copy_whisper": "Copy Whisper",
+        "copy_invite": "Copy Invite",
+        "leader_whisper_msg": "Hello {name}, I'm the group leader of {groupTitle}. Are you still interested in joining for {dungeon}?",
+        "member_whisper_msg": "Hello {leaderName}, I'm {myCharName}. I'm writing to ask for an invite to the group for {dungeon} ({groupTitle})."
     }
 }

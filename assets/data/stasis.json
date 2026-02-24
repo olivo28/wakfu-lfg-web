@@ -1,0 +1,216 @@
+{
+    "stasis_levels": [
+        {
+            "level": 1,
+            "difficulty_key": "stasis.difficulty.easy",
+            "monster_stats": {
+                "hp": "70%",
+                "damage": "60%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "60%"
+            },
+            "modulated": {
+                "xp_drop_rate": "60%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical"
+            ],
+            "color": "#00E5FF"
+        },
+        {
+            "level": 2,
+            "difficulty_key": "stasis.difficulty.normal",
+            "monster_stats": {
+                "hp": "100%",
+                "damage": "100%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "100%"
+            },
+            "modulated": {
+                "xp_drop_rate": "100%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical"
+            ],
+            "color": "#49FF00"
+        },
+        {
+            "level": 3,
+            "difficulty_key": "stasis.difficulty.hard",
+            "monster_stats": {
+                "hp": "140%",
+                "damage": "130%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "120%"
+            },
+            "modulated": {
+                "xp_drop_rate": "140%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical",
+                "rarity.epic"
+            ],
+            "color": "#FFEB3B"
+        },
+        {
+            "level": 4,
+            "difficulty_key": "stasis.difficulty.hard",
+            "monster_stats": {
+                "hp": "210%",
+                "damage": "190%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "160%"
+            },
+            "modulated": {
+                "xp_drop_rate": "250%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical",
+                "rarity.epic"
+            ],
+            "color": "#FFEB3B"
+        },
+        {
+            "level": 5,
+            "difficulty_key": "stasis.difficulty.very_hard",
+            "monster_stats": {
+                "hp": "310%",
+                "damage": "200%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "188%"
+            },
+            "modulated": {
+                "xp_drop_rate": "400%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical",
+                "rarity.epic"
+            ],
+            "color": "#FFC107"
+        },
+        {
+            "level": 6,
+            "difficulty_key": "stasis.difficulty.very_hard",
+            "monster_stats": {
+                "hp": "440%",
+                "damage": "210%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "200%"
+            },
+            "modulated": {
+                "xp_drop_rate": "550%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical",
+                "rarity.epic"
+            ],
+            "color": "#FFC107"
+        },
+        {
+            "level": 7,
+            "difficulty_key": "stasis.difficulty.very_hard",
+            "monster_stats": {
+                "hp": "600%",
+                "damage": "230%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "205%"
+            },
+            "modulated": {
+                "xp_drop_rate": "600%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical",
+                "rarity.epic"
+            ],
+            "color": "#FFC107"
+        },
+        {
+            "level": 8,
+            "difficulty_key": "stasis.difficulty.extreme",
+            "monster_stats": {
+                "hp": "660%",
+                "damage": "240%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "210%"
+            },
+            "modulated": {
+                "xp_drop_rate": "650%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical",
+                "rarity.epic"
+            ],
+            "color": "#E91E63"
+        },
+        {
+            "level": 9,
+            "difficulty_key": "stasis.difficulty.extreme",
+            "monster_stats": {
+                "hp": "880%",
+                "damage": "250%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "215%"
+            },
+            "modulated": {
+                "xp_drop_rate": "680%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical",
+                "rarity.epic"
+            ],
+            "color": "#E91E63"
+        },
+        {
+            "level": 10,
+            "difficulty_key": "stasis.difficulty.extreme",
+            "monster_stats": {
+                "hp": "1100%",
+                "damage": "260%"
+            },
+            "no_modulated": {
+                "xp_drop_rate": "220%"
+            },
+            "modulated": {
+                "xp_drop_rate": "710%"
+            },
+            "loot_rarity_keys": [
+                "rarity.common",
+                "rarity.rare",
+                "rarity.mythical",
+                "rarity.epic"
+            ],
+            "color": "#E91E63"
+        }
+    ],
+    "special_rules": {
+        "legendary_threshold": 111,
+        "legendary_key": "rarity.legendary"
+    }
+}

@@ -35,9 +35,10 @@ export const DungeonSelector = {
 
         // Aplicar pre-selección si existe
         if (preSelected) {
-            input.value = preSelected.name[lang] || preSelected.name['es'];
+            input.value = preSelected.name[lang] || preSelected.name['es'] || preSelected.name;
             // Opcional: Trigger onSelect para que el padre sepa
-            if (onSelect) onSelect(preSelected);
+            const realDungeon = DungeonSelector.dungeons.find(d => String(d.id) === String(preSelected.id));
+            if (onSelect) onSelect(realDungeon || preSelected);
         }
 
         // Evento de búsqueda

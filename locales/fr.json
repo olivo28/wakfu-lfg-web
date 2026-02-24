@@ -19,20 +19,26 @@
         "title": "Titre",
         "actions": "Actions",
         "save": "Enregistrer",
+        "update": "Mettre à jour",
         "edit": "Modifier",
         "delete": "Supprimer",
         "back": "Retour",
+        "next": "Suivant",
         "name_required": "Nom requis",
         "search_placeholder": "Rechercher...",
         "me": "Moi",
         "leave": "Quitter",
+        "copied_to_clipboard": "Copié dans le presse-papiers",
         "remove": "Supprimer",
         "free": "Gratuit",
         "key": "Clé",
         "created": "Créé",
         "updated": "Mis à jour",
         "admin_mode": "Mode Admin",
-        "dismiss": "Rejeter"
+        "dismiss": "Rejeter",
+        "stats_online": "en ligne",
+        "stats_active_groups": "groupes actifs",
+        "prototype_tagline": "Prototype pour la communauté Wakfu"
     },
     "nav": {
         "find_group": "Trouver un Groupe",
@@ -158,12 +164,14 @@
         "roles_sought": "Rôles Recherchés",
         "group_title": "Titre de la salle",
         "leader": "Chef",
+        "mono_limit_reached": "Le mode héros n'est pas dispo. sur ce serveur. Vous avez déjà une demande ici (Limite Monocompte).",
         "my_group": "Mon Groupe",
         "accept": "Accepter",
         "reject": "Refuser",
         "cancel": "Annuler",
         "pending_requests": "En attente",
         "resolved_requests": "Résolues",
+        "group_created_ok": "Groupe créé avec succès",
         "create_title": "Créer un nouveau groupe",
         "edit_title": "Mettre à jour le groupe",
         "roles_title": "Rôles recherchés",
@@ -184,11 +192,13 @@
         "confirm_cancel_req": "Annuler cette demande ?",
         "confirm_delete_group": "Supprimer définitivement ce groupe ?",
         "chat_languages": "Langues de chat",
+        "chat_lang_req": "Vous devez sélectionner au moins une langue de discussion.",
         "mission_only": "Mission uniquement",
         "requires_mechanics": "Connaissance des mécaniques requise",
         "mechanics_prompt_title": "Mécaniques requises",
         "mechanics_prompt_desc": "Connaissez-vous les mécaniques de ce donjon ? Si vous confirmez, cela sera enregistré dans votre profil.",
         "req_info": "Information",
+        "chat_lang": "Langue du Chat",
         "req_pending": "Demandes en attente",
         "req_none": "Pas de nouvelles demandes.",
         "error_no_group_id": "ID de groupe non trouvé",
@@ -215,7 +225,9 @@
         "seo_desc": "Groupe pour {dungeon} (Niveau {level}). Chef : {leader}. Rejoignez maintenant!",
         "group_updated_ok": "Groupe mis à jour avec succès !",
         "delete_group": "Supprimer le groupe",
-        "confirm_delete_permanent": "Êtes-vous sûr de vouloir supprimer définitivement ce groupe ? Cette action est irréversible."
+        "confirm_delete_permanent": "Êtes-vous sûr de vouloir supprimer définitivement ce groupe?<br>Cette action est irréversible.",
+        "main_char": "Principal",
+        "hero_char": "Héros"
     },
     "notifs": {
         "title": "Notifications",
@@ -237,5 +249,29 @@
     "stats": {
         "created_title": "Total des groupes créés",
         "completed_title": "Donjons terminés"
+    },
+    "stasis": {
+        "difficulty": {
+            "easy": "Facile",
+            "normal": "Normal",
+            "hard": "Difficile",
+            "very_hard": "Très Difficile",
+            "extreme": "Extrême"
+        }
+    },
+    "rarity": {
+        "common": "Commun",
+        "rare": "Rare",
+        "mythical": "Mythique",
+        "epic": "Épique",
+        "legendary": "Légendaire"
+    },
+    "lfg_actions": {
+        "whisper": "Chuchoter",
+        "invite": "Inviter",
+        "copy_whisper": "Copier Chuchotement",
+        "copy_invite": "Copier l'invitation",
+        "leader_whisper_msg": "Bonjour {name}, je suis le chef du groupe {groupTitle}. Es-tu toujours intéressé à nous rejoindre pour {dungeon} ?",
+        "member_whisper_msg": "Bonjour {leaderName}, je suis {myCharName}. Je t'écris pour que tu m'invites dans le groupe de {dungeon} ({groupTitle})."
     }
 }

@@ -1,6 +1,7 @@
 import { API } from '../core/api.js';
 import { i18n } from '../core/i18n.js';
 import { Header } from '../components/Header.js';
+import { CharacterCard, LfgChatHelper } from '../components/CharacterCard.js';
 import { Router } from '../core/router.js';
 import { LFGModals } from '../components/LFGModals.js';
 import { Modal } from '../components/Modal.js';
@@ -81,16 +82,7 @@ export const GroupDetailPage = {
             GroupDetailPage.classes = classes;
             GroupDetailPage.dungeons = dungeons;
 
-            const user = Header.getUserFromToken();
-            const isLeaderCheck = user && String(user.id) === String(groupRes.leader_id);
-            if (isLeaderCheck) {
-                const allRequests = await API.getReceivedRequests().catch(() => []);
-                GroupDetailPage.pendingRequests = Array.isArray(allRequests)
-                    ? allRequests.filter(r => (String(r.groupId || r.group_id) === String(groupId)) && r.status === 'pending')
-                    : [];
-            } else {
-                GroupDetailPage.pendingRequests = [];
-            }
+            GroupDetailPage.pendingRequests = groupRes.pendingRequests || [];
 
             if (container) {
                 container.innerHTML = GroupDetailPage.renderContent(
@@ -117,13 +109,21 @@ export const GroupDetailPage = {
                 });
 
                 Socket.off('request_processed');
-                Socket.on('request_processed', async (data) => {
-                    if (String(data.groupId) === String(groupId)) {
-                        await GroupDetailPage.refresh();
-                    }
-                });
-            }
-        } catch (e) {
+            Socket.on('request_processed', async (data) => {
+                if (String(data.groupId) === String(groupId)) {
+                    await GroupDetailPage.refresh();
+                }
+            });
+
+            // Escuchar nuevas solicitudes para refrescar la lista de aspirantes
+            Socket.off('new_notification');
+            Socket.on('new_notification', async (data) => {
+                if (data.type === 'request_received' && String(data.groupId) === String(groupId)) {
+                    await GroupDetailPage.refresh();
+                }
+            });
+        }
+    } catch (e) {
             console.error('[GroupDetail] afterRender error:', e);
             if (container) container.innerHTML = `<div class="error-state">${i18n.t('lfg.error_load_group', { error: e.message })}</div>`;
         }
@@ -137,6 +137,18 @@ export const GroupDetailPage = {
         const isAdmin = group.isAdminView;
         const canManage = isLeader || isAdmin;
         const lang = i18n.currentLang;
+
+        const userMainCharIds = {};
+        members.forEach(m => {
+            const uid = String(m.user_id || m.userId);
+            if (!userMainCharIds[uid]) {
+                if (uid === String(group.leader_id)) {
+                    userMainCharIds[uid] = String(data.leaderCharacterId);
+                } else {
+                    userMainCharIds[uid] = String(m.id);
+                }
+            }
+        });
 
         const dungInfo = dungeons.find(d => d.id == data.dungeonId);
         const dungeonName = dungInfo?.name?.[lang] || dungInfo?.name?.['es'] || data.dungeonName?.[lang] || '...';
@@ -166,11 +178,11 @@ export const GroupDetailPage = {
                 </header>
 
                 <div class="detail-grid">
-                    <section class="detail-section members-section">
+                    <section class="detail-section members-section" style="align-self: flex-start;">
                         <h3 class="label-tech section-title">${i18n.t('lfg.team_actual', { current: members.length, total: dungInfo?.players || 6 })}</h3>
                         <div class="full-body-team">
                             ${members.map(m => `
-                                <div class="full-body-member">
+                                <div class="full-body-member" data-user-id="${String(m.user_id || m.userId)}">
                                     <div class="char-render-container">
                                         <img src="${getBodyAsset(m)}" class="ak-breed-render ak-breed-direction-0">
                                     </div>
@@ -190,33 +202,66 @@ export const GroupDetailPage = {
                                         </div>
                                     </div>
                                     ${(() => {
-                                        const isMyChar = user && String(m.user_id || m.userId) === String(user.id);
+                                        const uid = String(m.user_id || m.userId);
+                                        const isMyChar = user && uid === String(user.id);
                                         const isLeaderChar = String(m.id) === String(group.data.leaderCharacterId);
+                                        const isMainChar = String(m.id) === userMainCharIds[uid];
+                                        const isHero = !isMainChar && !isLeaderChar;
+
+                                        // Verificar si el usuario de este personaje tiene configurados héroes en el grupo
+                                        const userMemberCount = members.filter(mx => String(mx.user_id || mx.userId) === uid).length;
+                                        const hasHeroes = userMemberCount > 1;
+
                                         let badge = '';
                                         if (isLeaderChar) {
-                                            badge = `<span class="leader-crown-badge" title="${i18n.t('lfg.leader')}">👑</span>`;
+                                            badge += `<span class="leader-crown-badge" title="${i18n.t('lfg.leader')}">👑</span>`;
                                         }
                                         
+                                        if (isHero) {
+                                            const heroTitle = i18n.t('lfg.hero_char') || 'Héroe';
+                                            badge += `<span title="${heroTitle}" style="position: absolute; top: 4px; right: 4px; background: rgba(46, 204, 113, 0.2); border: 1px solid rgba(46, 204, 113, 0.4); color: #2ecc71; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: bold; z-index: 10;">${heroTitle.toUpperCase()}</span>`;
+                                        } else if (isMainChar && hasHeroes) {
+                                            const mainTitle = i18n.t('lfg.main_char') || 'Principal';
+                                            badge += `<span title="${mainTitle}" style="position: absolute; top: 4px; right: 4px; background: rgba(230, 126, 34, 0.2); border: 1px solid rgba(230, 126, 34, 0.4); color: #e67e22; font-size: 9px; padding: 2px 4px; border-radius: 4px; font-weight: bold; z-index: 10;">${mainTitle.toUpperCase()}</span>`;
+                                        }
+                                        
+                                        // --- CHAT BUTTONS ---
+                                        let chatBtns = '';
+                                        const myMainChar = user ? members.find(mx => String(mx.user_id || mx.userId) === String(user.id)) : null;
+                                        const userHasCharInGroup = !!myMainChar;
+
+                                        if (isLeaderChar) {
+                                            // El botón para hablar con el líder sale si NO soy yo y SI tengo al menos un pj en el grupo
+                                            if (!isMyChar && userHasCharInGroup) {
+                                                chatBtns = LfgChatHelper.renderChatControls(m, dungeonName, data.title || '', 'member', m.name, myMainChar?.name || '...');
+                                            }
+                                        } else if (isLeader) {
+                                            // El líder ve botones para otros, NUNCA para sus propios personajes/héroes
+                                            if (!isMyChar) {
+                                                chatBtns = LfgChatHelper.renderChatControls(m, dungeonName, data.title || '', 'leader');
+                                            }
+                                        }
+
                                         if (isMyChar && isLeaderChar) {
-                                            return badge + `
+                                            return badge + chatBtns + `
                                                 <button class="btn-kick-member btn-leave-member" data-id="${m.id}" title="${i18n.t('lfg.leader_leave')}">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                                 </button>
                                             `;
                                         } else if (isMyChar && !isLeaderChar) {
-                                            return badge + `
+                                            return badge + chatBtns + `
                                                 <button class="btn-kick-member btn-leave-member" data-id="${m.id}" title="${i18n.t('ui.leave')}">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                                 </button>
                                             `;
                                         } else if (canManage && !isLeaderChar) {
-                                            return badge + `
+                                            return badge + chatBtns + `
                                                 <button class="btn-kick-member" data-id="${m.id}" title="${i18n.t('ui.remove')}">
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                                                 </button>
                                             `;
                                         }
-                                        return badge;
+                                        return badge + chatBtns;
                                     })()}
                                 </div>
                             `).join('')}
@@ -254,6 +299,34 @@ export const GroupDetailPage = {
                                 <span class="info-label">${i18n.t('ui.level')} REQ:</span>
                                 <span class="info-val">${levelDisplay}</span>
                             </div>
+
+                            ${data.missionOnly ? `
+                            <div class="info-row">
+                                <span class="info-label">${i18n.t('lfg.mission_only') || 'Solo misión'}:</span>
+                                <span class="info-val" style="color: #ffd700;">${i18n.t('ui.yes')}</span>
+                            </div>` : ''}
+
+                            ${data.requiresMechanics ? `
+                            <div class="info-row">
+                                <span class="info-label">${i18n.t('lfg.requires_mechanics') || 'Mecánicas'}:</span>
+                                <span class="info-val" style="color: #ff4d4d;">${i18n.t('ui.yes')} ⚙️</span>
+                            </div>` : ''}
+
+                            ${(data.languages && data.languages.length > 0) ? `
+                            <div class="info-row" style="align-items: flex-start;">
+                                <span class="info-label">${i18n.t('lfg.chat_languages') || 'Idioma'}:</span>
+                                <span class="info-val" style="display:flex; gap:6px; flex-wrap:wrap; justify-content: flex-end; margin-top:2px;">
+                                    ${data.languages.map(l => {
+                                        const flags = {
+                                            'PT': 'https://flagcdn.com/w80/br.png',
+                                            'ES': 'https://flagcdn.com/w80/es.png',
+                                            'EN': 'https://flagcdn.com/w80/us.png',
+                                            'FR': 'https://flagcdn.com/w80/fr.png'
+                                        };
+                                        return `<img src="${flags[l] || flags['ES']}" alt="${l}" title="${l}" style="width: 18px; border-radius: 2px; box-shadow: 0 0 2px rgba(0,0,0,0.5);">`;
+                                    }).join('')}
+                                </span>
+                            </div>` : ''}
 
                             ${(group.createdAt || group.updatedAt) ? (() => {
                                 // Ensure timestamps are parsed as UTC (DB stores without timezone info).
@@ -302,28 +375,59 @@ export const GroupDetailPage = {
                             </div>` : ''}
                         </div>
 
-                        ${isLeader ? `
+                        ${(isLeader || pendingRequests.length > 0) ? `
                             <div class="leader-panel-tech">
                                 <h3 class="label-tech">${i18n.t('lfg.req_pending')}</h3>
                                 <div class="requests-stack-mini">
-                                    ${pendingRequests.length > 0 ? pendingRequests.map(req => {
-                                        const ch = req.requesterCharacter || req.character || req;
-                                        const classId = String(ch.classId || ch.class_id || 1).padStart(2, '0');
-                                        const gender = ch.gender || 0;
-                                        const isMyOwnRequest = String(req.requester_id || req.requesterId) === String(user.id);
-                                        return `
-                                        <div class="mini-req-item ${isMyOwnRequest ? 'own-request' : ''}">
-                                            <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${classId}${gender}.png" class="emote-mini">
-                                            <div class="mini-req-info">
-                                                <span class="mini-name">${escapeHTML(ch.name || '???')} ${isMyOwnRequest ? `<small>(${i18n.t('ui.me')})</small>` : ''}</span>
-                                                <span class="mini-lvl">${i18n.t('profile.level_short')} ${ch.level || '?'}</span>
+                                    ${(() => {
+                                        if (pendingRequests.length === 0) return `<p class="text-dim-mini">${i18n.t('lfg.req_none')}</p>`;
+
+                                        return pendingRequests.map(req => {
+                                            const isMyOwnRequest = user && String(req.requester_id || req.requesterId) === String(user.id);
+                                            // Handle cases where requesterCharacters is missing or empty
+                                            let chars = [];
+                                            if (req.requesterCharacters && req.requesterCharacters.length > 0) chars = req.requesterCharacters;
+                                            else if (req.requesterCharacter || req.character) chars = [req.requesterCharacter || req.character];
+                                            else chars = [req];
+                                            
+                                            return `
+                                            <div class="mini-req-group ${isMyOwnRequest ? 'own-request' : ''}">
+                                                <div class="mini-req-list">
+                                                    ${chars.map(ch => {
+                                                        const classId = String(ch.classId || ch.class_id || 1).padStart(2, '0');
+                                                        const gender = ch.gender || 0;
+                                                        return `
+                                                        <div class="mini-req-item">
+                                                            <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${classId}${gender}.png" class="emote-mini">
+                                                            <div class="mini-req-info">
+                                                                <span class="mini-name">${escapeHTML(ch.name || '???')} ${isMyOwnRequest ? `<small>(${i18n.t('ui.me')})</small>` : ''}</span>
+                                                                <span class="mini-lvl">${i18n.t('profile.level_short')} ${ch.level || '?'}</span>
+                                                            </div>
+                                                            ${isLeader && !isMyOwnRequest ? LfgChatHelper.renderChatControls(ch, dungeonName, data.title || '', 'leader') : ''}
+                                                        </div>
+                                                        `;
+                                                    }).join('')}
+                                                </div>
+                                                ${isLeader ? `
+                                                <div class="mini-req-actions">
+                                                    <button class="btn-action btn-accept-inline" data-id="${req.id}" title="${i18n.t('lfg.accept')}">
+                                                        ${chars.length > 1 ? `✅ (${chars.length})` : '✅'}
+                                                    </button>
+                                                    <button class="btn-action btn-reject-inline" data-id="${req.id}" title="${i18n.t('lfg.reject')}">
+                                                        ${chars.length > 1 ? `❌ (${chars.length})` : '❌'}
+                                                    </button>
+                                                </div>
+                                                ` : (isMyOwnRequest ? `
+                                                <div class="mini-req-actions">
+                                                    <button class="btn-action btn-cancel-request" data-id="${req.id}" title="${i18n.t('lfg.cancel')}">
+                                                        ${i18n.t('lfg.cancel')}
+                                                    </button>
+                                                </div>
+                                                ` : '')}
                                             </div>
-                                            <div class="mini-req-actions">
-                                                <button class="btn-action btn-accept-inline" data-id="${req.id}" title="${i18n.t('lfg.accept')}">&#10003;</button>
-                                                <button class="btn-action btn-reject-inline" data-id="${req.id}" title="${i18n.t('lfg.reject')}">&#10005;</button>
-                                            </div>
-                                        </div>
-                                    `}).join('') : `<p class="text-dim-mini">${i18n.t('lfg.req_none')}</p>`}
+                                            `;
+                                        }).join('');
+                                    })()}
                                 </div>
                             </div>
                         ` : ''}
@@ -367,19 +471,30 @@ export const GroupDetailPage = {
                                 <h3 class="label-tech" data-i18n="lfg.sent_requests">${(i18n.t('lfg.sent_requests'))}</h3>
                                 <div class="requests-stack-mini">
                                     ${group.userPendingRequests.map(req => {
-                                        const ch = req.requesterCharacter || req.character || req;
-                                        const classId = String(ch.classId || ch.class_id || 1).padStart(2, '0');
-                                        const gender = ch.gender || 0;
+                                        let chars = [];
+                                        if (req.requesterCharacters && req.requesterCharacters.length > 0) chars = req.requesterCharacters;
+                                        else if (req.requesterCharacter || req.character) chars = [req.requesterCharacter || req.character];
+                                        else chars = [req];
                                         return `
-                                        <div class="mini-req-item">
-                                            <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${classId}${gender}.png" class="emote-mini">
-                                            <div class="mini-req-info">
-                                                <span class="mini-name">${escapeHTML(ch.name || '???')}</span>
-                                                <span class="mini-lvl" data-i18n="lfg.status_pending">${i18n.t('lfg.status_pending').toUpperCase()}</span>
+                                        <div class="mini-req-group own-request" style="border: 1px solid rgba(255,255,255,0.05); padding: 5px; border-radius: 6px; margin-bottom: 8px; background: rgba(0,0,0,0.2);">
+                                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                ${chars.map(ch => {
+                                                    const classId = String(ch.classId || ch.class_id || 1).padStart(2, '0');
+                                                    const gender = ch.gender || 0;
+                                                    return `
+                                                    <div class="mini-req-item" style="margin-bottom: 0; padding: 2px 0; border: none; background: transparent;">
+                                                        <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${classId}${gender}.png" class="emote-mini">
+                                                        <div class="mini-req-info">
+                                                            <span class="mini-name">${escapeHTML(ch.name || '???')}</span>
+                                                            <span class="mini-lvl" data-i18n="lfg.status_pending">${i18n.t('lfg.status_pending').toUpperCase()}</span>
+                                                        </div>
+                                                    </div>
+                                                    `;
+                                                }).join('')}
                                             </div>
-                                            <div class="mini-req-actions">
-                                                <button class="btn-action btn-cancel-request" data-id="${req.id}" title="${i18n.t('ui.cancel')}">
-                                                    &#10005;
+                                            <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 6px; margin-top: 4px; display: flex; justify-content: flex-end;">
+                                                <button class="btn-action btn-cancel-request" data-id="${req.id}" title="${i18n.t('ui.cancel')}" style="flex: 1; padding: 4px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                                                    ${i18n.t('ui.cancel')}
                                                 </button>
                                             </div>
                                         </div>
@@ -389,13 +504,30 @@ export const GroupDetailPage = {
                             </div>
                         ` : ''}
 
-                        ${members.length < (dungInfo?.players || 6) ? `
-                            <div class="action-panel-tech" style="margin-top: ${isLeader || (group.userPendingRequests?.length > 0) ? '10px' : '0'}">
+                        ${(() => {
+                            const isRubilax = String(data.server || 'all').toLowerCase() === 'rubilax';
+                            const myMemberCount = user ? members.filter(mx => String(mx.user_id || mx.userId) === String(user.id)).length : 0;
+                            const hasPending = group.userPendingRequests && group.userPendingRequests.length > 0;
+                            const canJoin = members.length < (dungInfo?.players || 6);
+
+                            if (!canJoin) return '';
+
+                            if (!isRubilax && (myMemberCount > 0 || hasPending)) {
+                                return `
+                                <div class="action-panel-tech" style="margin-top: ${isLeader || hasPending ? '10px' : '0'}; text-align: center; color: var(--text-dim); font-size: 11px; padding: 8px; border: 1px dashed rgba(255,255,255,0.1); border-radius: 6px;">
+                                    ${i18n.t('lfg.mono_limit_reached') || 'El modo héroes no está disponible en este servidor. Ya tienes una solicitud o personaje aquí.'}
+                                </div>
+                                `;
+                            }
+
+                            return `
+                            <div class="action-panel-tech" style="margin-top: ${isLeader || hasPending ? '10px' : '0'}">
                                 <button class="btn btn-accent btn-block btn-join-detail" data-id="${group.id}">
                                     ${i18n.t('ui.request_join')}
                                 </button>
                             </div>
-                        ` : ''}
+                            `;
+                        })()}
                     </aside>
                 </div>
             </div>
@@ -403,23 +535,66 @@ export const GroupDetailPage = {
     },
 
     bindListeners: () => {
+        // Highlight all characters of the same system on hover
+        document.querySelectorAll('.full-body-member[data-user-id]').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                const uid = card.dataset.userId;
+                document.querySelectorAll(`.full-body-member[data-user-id="${uid}"]`).forEach(c => {
+                    c.style.boxShadow = '0 0 15px rgba(46, 204, 113, 0.4)';
+                    c.style.borderColor = 'rgba(46, 204, 113, 0.8)';
+                    c.style.transform = 'translateY(-2px)';
+                    c.style.transition = 'all 0.2s ease';
+                });
+            });
+            card.addEventListener('mouseleave', () => {
+                const uid = card.dataset.userId;
+                document.querySelectorAll(`.full-body-member[data-user-id="${uid}"]`).forEach(c => {
+                    c.style.boxShadow = '';
+                    c.style.borderColor = '';
+                    c.style.transform = '';
+                });
+            });
+        });
+
         document.querySelectorAll('.btn-accept-inline').forEach(btn => {
             btn.onclick = async () => {
                 const id = btn.dataset.id;
+                if (!id) return;
+                
                 try {
-                    await API.processRequest(id, 'accepted');
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    try {
+                        await API.processRequest(id, 'accepted');
+                    } catch (err) {
+                        await Modal.error(err.message);
+                    }
                     await GroupDetailPage.refresh();
-                } catch (err) { await Modal.error(err.message); }
+                } finally { 
+                    btn.disabled = false; 
+                    btn.style.opacity = '1';
+                }
             };
         });
 
         document.querySelectorAll('.btn-reject-inline').forEach(btn => {
             btn.onclick = async () => {
                 const id = btn.dataset.id;
+                if (!id) return;
+                
                 try {
-                    await API.processRequest(id, 'rejected');
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                    try {
+                        await API.processRequest(id, 'rejected');
+                    } catch (err) {
+                        await Modal.error(err.message);
+                    }
                     await GroupDetailPage.refresh();
-                } catch (err) { await Modal.error(err.message); }
+                } finally { 
+                    btn.disabled = false; 
+                    btn.style.opacity = '1';
+                }
             };
         });
 
@@ -494,15 +669,59 @@ export const GroupDetailPage = {
                 await Modal.info(i18n.t('lfg.group_closed_ok'));
             } catch (err) { await Modal.error(err.message); }
         });
+        // --- CHAT ACTIONS (Clipboard Copy) ---
+        document.querySelectorAll('.btn-copy-whisper, .btn-copy-invite').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const text = btn.dataset.text;
+                const title = btn.getAttribute('title');
+                if (text) LfgChatHelper.copyToClipboard(text, title);
+            };
+        });
     },
 
     refresh: async () => {
         if (Router.currentPath !== '/group') return;
-        const app = document.getElementById('app');
-        if (!app) return;
+        const container = document.getElementById('group-detail-root');
+        if (!container) return;
         
-        // Re-render the shell and then the content
-        app.innerHTML = await GroupDetailPage.render();
-        await GroupDetailPage.afterRender();
+        try {
+            const groupId = Router.params.id;
+            const groupRes = await API.getGroup(groupId);
+            GroupDetailPage.group = groupRes;
+
+            GroupDetailPage.pendingRequests = groupRes.pendingRequests || [];
+
+            // Create temporary container for soft-diff
+            const newHtml = GroupDetailPage.renderContent(
+                GroupDetailPage.group, 
+                GroupDetailPage.classes, 
+                GroupDetailPage.dungeons, 
+                GroupDetailPage.pendingRequests
+            );
+            
+            const temp = document.createElement('div');
+            temp.innerHTML = newHtml;
+
+            const detailContainer = container.querySelector('.group-detail-container');
+            const newDetailContainer = temp.querySelector('.group-detail-container');
+            
+            // Soft replace
+            if (detailContainer && newDetailContainer) {
+                const currentHeader = detailContainer.querySelector('.detail-header');
+                const newHeader = newDetailContainer.querySelector('.detail-header');
+                if (currentHeader && newHeader) currentHeader.innerHTML = newHeader.innerHTML;
+
+                const currentGrid = detailContainer.querySelector('.detail-grid');
+                const newGrid = newDetailContainer.querySelector('.detail-grid');
+                if (currentGrid && newGrid) currentGrid.innerHTML = newGrid.innerHTML;
+            } else {
+                container.innerHTML = newHtml;
+            }
+            
+            GroupDetailPage.bindListeners();
+        } catch (e) {
+            console.error('[GroupDetail] Seamless refresh failed:', e);
+        }
     }
 };

@@ -63,12 +63,12 @@ export const Modal = {
     /**
      * Muestra un aviso informativo (reemplazo de alert)
      */
-    info: (message, title = i18n.t("lfg.req_info")) => {
+    info: (message, title = i18n.t("lfg.req_info"), className = "") => {
         return new Promise((resolve) => {
             Modal.open(title, `<div style="text-align: center; padding: 20px 0;">${message}</div>`, () => {
                 Modal.close();
                 resolve();
-            }, "modal-alert");
+            }, "modal-alert " + className);
             
             const closeBtn = document.getElementById('modal-close');
             if (closeBtn) closeBtn.onclick = () => { Modal.close(); resolve(); };
@@ -81,12 +81,12 @@ export const Modal = {
     /**
      * Muestra un aviso de error
      */
-    error: (message, title = "ERROR") => {
+    error: (message, title = "ERROR", className = "") => {
         return new Promise((resolve) => {
             Modal.open(title, `<div style="text-align: center; padding: 20px 0; color: #ff6b6b;">${message}</div>`, () => {
                 Modal.close();
                 resolve();
-            }, "modal-alert modal-error-border");
+            }, "modal-alert modal-error-border " + className);
             
             const closeBtn = document.getElementById('modal-close');
             if (closeBtn) closeBtn.onclick = () => { Modal.close(); resolve(); };
@@ -99,12 +99,12 @@ export const Modal = {
     /**
      * Muestra un diálogo de confirmación (reemplazo de confirm)
      */
-    confirm: (message, title = i18n.t("ui.confirm")) => {
+    confirm: (message, title = i18n.t("ui.confirm"), className = "") => {
         return new Promise((resolve) => {
             Modal.open(title, `<div style="text-align: center; padding: 20px 0;">${message}</div>`, () => {
                 Modal.close();
                 resolve(true);
-            }, "modal-alert");
+            }, "modal-confirm " + className);
 
             const cancelBtn = document.getElementById('modal-cancel');
             if (cancelBtn) {
