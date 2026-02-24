@@ -9,8 +9,8 @@ export const SEO = {
     _defaultTags: {
         title: 'Wakfu LFG - Buscador de Grupos',
         description: 'Encuentra grupo para mazmorras en Wakfu de forma rápida y sencilla.',
-        image: `https://wakfu.pcnetfs.moe${CONFIG.BASE_PATH}/assets/ui/og_image.jpg`,
-        url: `https://wakfu.pcnetfs.moe${CONFIG.BASE_PATH}`,
+        image: `${CONFIG.BASE_PATH}/assets/ui/og_image.jpg`,
+        url: `${CONFIG.BASE_PATH}/`,
         keywords: 'wakfu, lfg, groups, dungeons, mmo, tactical',
         author: 'Antigravity'
     },
