@@ -934,7 +934,6 @@
     font-size: 11px;
     font-weight: 700;
     color: var(--text-dim);
-    text-transform: uppercase;
 }
 
 .class-card.selected span {

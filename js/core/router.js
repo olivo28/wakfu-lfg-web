@@ -118,6 +118,14 @@ export const Router = {
         const urlParams = new URLSearchParams(window.location.search);
         token = urlParams.get('token');
 
+        // Fallback: Si no está en query params, buscar en el hash (por si el server aún lo envía así)
+        if (!token && window.location.hash.includes('token=')) {
+            const hashParts = window.location.hash.split('?');
+            const hashQuery = hashParts[1] || hashParts[0].replace(/^#/, '');
+            const hashParams = new URLSearchParams(hashQuery);
+            token = hashParams.get('token');
+        }
+
         if (token) {
             localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
             try {
@@ -146,7 +154,7 @@ export const Router = {
             return;
         }
 
-        if (internalPath === '/dungeons' || internalPath === '/' || internalPath.startsWith('/finder') || internalPath === '/profile' || internalPath === '/group') {
+        if (internalPath === '/dungeons' || internalPath === '/' || internalPath.startsWith('/finder') || internalPath === '/profile' || internalPath === '/group' || internalPath === '/login') {
             document.body.classList.add('full-width-mode');
         } else {
             document.body.classList.remove('full-width-mode');
@@ -161,7 +169,11 @@ export const Router = {
         `;
 
         try {
-            appContainer.innerHTML = await page.render();
+            const html = await page.render();
+            // Guard: If a redirect happened during render() (currentPath changed), abort applying changes
+            if (this.currentPath !== internalPath) return;
+
+            appContainer.innerHTML = html;
             window.scrollTo(0, 0);
             
             if (page.afterRender) await page.afterRender();
