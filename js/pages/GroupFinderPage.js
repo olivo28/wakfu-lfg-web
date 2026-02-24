@@ -24,7 +24,7 @@ export const GroupFinderPage = {
                     level: dung.min_lvl, 
                     leader: 'Wakfu' 
                 }),
-                image: `${CONFIG.BASE_PATH}/assets/mazmos/${dung.id}.png`
+                image: `${window.location.origin}${CONFIG.BASE_PATH}/assets/mazmos/${dung.id}.png`
             };
         }
 

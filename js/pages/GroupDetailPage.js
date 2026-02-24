@@ -48,7 +48,8 @@ export const GroupDetailPage = {
                 level: data.level || '?', 
                 leader: leaderName 
             }),
-            image: `${window.location.origin}${CONFIG.BASE_PATH}/assets/mazmos/${data.dungeonId}.png`
+            image: `${window.location.origin}${CONFIG.BASE_PATH}/assets/mazmos/${data.dungeonId}.png`,
+            keywords: `${dungeonName}, wakfu, lfg, group, ${leaderName}`
         };
     },
 
@@ -102,8 +103,7 @@ export const GroupDetailPage = {
                 GroupDetailPage.bindListeners();
             }
 
-            // SEO Update after data is loaded
-            SEO.update(await GroupDetailPage.getSEOData());
+            // SEO Update handled by Router after data is loaded
 
             if (groupId) {
                 Socket.joinGroup(groupId);

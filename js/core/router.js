@@ -164,17 +164,17 @@ export const Router = {
             appContainer.innerHTML = await page.render();
             window.scrollTo(0, 0);
             
-            // SEO Update
-            // If the page has 'manualSEO', it will handle the update after its own async data is loaded
+            if (page.afterRender) await page.afterRender();
+
+            // SEO Update (Moved to after afterRender to ensure dynamic data is loaded)
             if (!page.manualSEO) {
                 if (page.getSEOData) {
-                    SEO.update(await page.getSEOData());
+                    const seoData = await page.getSEOData();
+                    SEO.update(seoData);
                 } else {
                     SEO.update();
                 }
             }
-
-            if (page.afterRender) await page.afterRender();
         } catch (error) {
             console.error("Error en router:", error);
             appContainer.innerHTML = `<div class="error-state">Error cargando la página: ${error.message}</div>`;

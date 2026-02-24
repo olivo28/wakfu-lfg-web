@@ -15,7 +15,8 @@ export const DungeonListPage = {
 
     getSEOData: () => ({
         title: `${i18n.t('dungeons.title') || i18n.t('dungeons.search')} | ${i18n.t('ui.brand')}`,
-        description: i18n.t('dungeons.subtitle') || 'Explora todas las mazmorras de Wakfu y consulta grupos activos.'
+        description: i18n.t('dungeons.subtitle') || 'Explora todas las mazmorras de Wakfu y consulta grupos activos.',
+        image: `${window.location.origin}${CONFIG.BASE_PATH}/assets/ui/og_image.jpg`
     }),
 
     render: async () => {

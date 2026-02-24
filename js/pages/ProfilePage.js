@@ -29,7 +29,8 @@ export const ProfilePage = {
 
         return {
             title: `${pageTitle} | ${i18n.t('ui.brand')}`,
-            description: i18n.t(`profile.tab_${baseKey}_desc`) || 'Gestiona tus personajes y revisa tus solicitudes de grupo.'
+            description: i18n.t(`profile.tab_${baseKey}_desc`) || 'Gestiona tus personajes y revisa tus solicitudes de grupo.',
+            image: `${window.location.origin}${CONFIG.BASE_PATH}/assets/ui/og_image.jpg`
         };
     },
 
