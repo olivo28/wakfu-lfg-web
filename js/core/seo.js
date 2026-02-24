@@ -1,3 +1,4 @@
+import { CONFIG } from '../config.js';
 import { i18n } from './i18n.js';
 
 /**
@@ -8,7 +9,7 @@ export const SEO = {
     _defaultTags: {
         title: 'Wakfu LFG - Buscador de Grupos',
         description: 'Encuentra grupo para mazmorras en Wakfu de forma rápida y sencilla.',
-        image: `${window.location.href.split('#')[0]}assets/ui/og_image.jpg`,
+        image: `${CONFIG.BASE_PATH}/assets/ui/og_image.jpg`,
         url: window.location.origin
     },
 
@@ -20,7 +21,7 @@ export const SEO = {
         const title = data.title || i18n.t('ui.app_title') || this._defaultTags.title;
         const description = data.description || this._defaultTags.description;
         const image = data.image || this._defaultTags.image;
-        const url = data.url || (window.location.origin + window.location.hash);
+        const url = data.url || (window.location.origin + window.location.pathname);
 
         // Update Document Title
         document.title = title;

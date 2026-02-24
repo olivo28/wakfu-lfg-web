@@ -30,7 +30,9 @@
         "free": "Gratis",
         "key": "Llave",
         "created": "Creado",
-        "updated": "Actualizado"
+        "updated": "Actualizado",
+        "admin_mode": "Modo Admin",
+        "dismiss": "Descartar"
     },
     "nav": {
         "find_group": "Buscar Grupo",
@@ -145,6 +147,7 @@
         "title": "Wakfu LFG",
         "subtitle": "Conexión requerida",
         "description": "Para crear grupos y registrar tus personajes, es necesario autenticarte a través de Discord. No publicaremos nada sin tu permiso.",
+        "seo_description": "Inicia sesión con Discord para empezar a buscar o crear grupos en Wakfu.",
         "feature_chars": "Gestión de Personajes",
         "feature_groups": "Creación de Grupos",
         "feature_notif": "Notificaciones en tiempo real",

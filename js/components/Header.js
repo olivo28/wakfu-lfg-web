@@ -50,17 +50,17 @@ export const Header = {
         return `
             <nav class="nav-container">
                 <div class="nav-logo">
-                    <a href="#/${currentLangCode}/" data-link class="logo-text">
-                        <img src="assets/classes/icons/${randomId}.png" alt="Logo" class="logo-img icon-technical">
+                    <a href="/${currentLangCode}/" data-link class="logo-text">
+                        <img src="${CONFIG.BASE_PATH}/assets/classes/icons/${randomId}.png" alt="Logo" class="logo-img icon-technical">
                         <span>${CONFIG.APP_NAME}</span>
                     </a>
                 </div>
 
                 <div class="nav-right">
                     <ul class="nav-links" id="nav-menu">
-                        <li><a href="#/${currentLangCode}/" data-link data-i18n="nav.find_group"></a></li>
-                        <li><a href="#/${currentLangCode}/dungeons" data-link data-i18n="nav.dungeons"></a></li>
-                        <li><a href="#/${currentLangCode}/profile" data-link data-i18n="nav.my_profile"></a></li>
+                        <li><a href="/${currentLangCode}/" data-link data-i18n="nav.find_group">${i18n.t('nav.find_group')}</a></li>
+                        <li><a href="/${currentLangCode}/dungeons" data-link data-i18n="nav.dungeons">${i18n.t('nav.dungeons')}</a></li>
+                        <li><a href="/${currentLangCode}/profile" data-link data-i18n="nav.my_profile">${i18n.t('nav.my_profile')}</a></li>
                         
                         <li class="lang-custom-container">
                             <button class="lang-active-btn" id="lang-menu-btn">
@@ -85,13 +85,13 @@ export const Header = {
                             ${user ? `
                                 <div class="user-pill-tech">
                                     <img src="https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png" 
-                                         class="nav-avatar" onerror="this.src='assets/classes/icons/8.png'">
+                                         class="nav-avatar" onerror="this.src='${CONFIG.BASE_PATH}/assets/classes/icons/8.png'">
                                     <span class="nav-username">${user.username}</span>
                                     <button id="btn-logout" class="logout-mini" title="${i18n.t('nav.logout')}">×</button>
                                 </div>
                             ` : `
-                                <a href="#/${currentLangCode}/login" class="btn btn-accent" data-link>
-                                    <span data-i18n="nav.login"></span>
+                                <a href="/${currentLangCode}/login" class="btn btn-accent" data-link>
+                                    <span data-i18n="nav.login">${i18n.t('nav.login')}</span>
                                 </a>
                             `}
                         </li>
@@ -123,10 +123,14 @@ export const Header = {
                 const newLang = opt.dataset.lang;
                 langDropdown?.classList.remove('show');
                 
-                // En vez de setLanguage directo, cambiamos el hash.
-                // El Router detectará el cambio, llamará a i18n.setLanguage y re-renderizará todo.
-                const currentHash = window.location.hash.slice(1) || '/';
-                const parts = currentHash.split('/');
+                // Obtenemos el path interno (sin BASE_PATH)
+                let path = window.location.pathname;
+                if (CONFIG.BASE_PATH && path.startsWith(CONFIG.BASE_PATH)) {
+                    path = path.replace(CONFIG.BASE_PATH, '');
+                }
+                if (!path.startsWith('/')) path = '/' + path;
+
+                const parts = path.split('/');
                 // parts[0] es "", parts[1] es el lenguaje antiguo
                 parts[1] = newLang;
                 

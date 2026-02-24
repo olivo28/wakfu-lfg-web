@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Wakfu LFG</title>
+    <script type="text/javascript">
+        // Este script captura la URL que falló (404), la guarda en sessionStorage
+        // y redirige al index.html para que la SPA la recupere y navegue correctamente.
+        sessionStorage.redirect = location.href;
+
+        // Detectar si estamos en un subdirectorio conocido o en root
+        var path = window.location.pathname;
+        var basePath = path.startsWith('/wakfu-lfg-web') ? '/wakfu-lfg-web/' : '/';
+
+        location.replace(basePath);
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>

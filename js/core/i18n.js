@@ -9,28 +9,54 @@ export const i18n = {
      */
     async init() {
         // 1. Detectar idioma: URL > LocalStorage > Navegador > Config Default
-        const hashLang = this.getLangFromHash();
+        const pathLang = this.getLangFromPath();
         const savedLang = localStorage.getItem(CONFIG.STORAGE_KEYS.LANG);
         const browserLang = navigator.language.split('-')[0];
         
-        let langToLoad = hashLang || savedLang || browserLang;
+        let langToLoad = pathLang || savedLang || browserLang;
 
-        // Verificar si el idioma detectado está soportado
         if (!CONFIG.SUPPORTED_LANGS.includes(langToLoad)) {
             langToLoad = CONFIG.DEFAULT_LANG;
         }
 
-        await this.setLanguage(langToLoad);
+        // 2. Cargar INSTANTÁNEAMENTE desde caché si existe
+        const cacheKey = `${CONFIG.STORAGE_KEYS.TRANSLATIONS}_${langToLoad}`;
+        const cached = localStorage.getItem(cacheKey);
+        
+        if (cached) {
+            try {
+                this.translations = JSON.parse(cached);
+                this.currentLang = langToLoad;
+                document.documentElement.lang = langToLoad;
+                // Renderizado inmediato
+                this.translatePage();
+            } catch (e) {
+                console.warn("i18n: Cache corrupto, se ignorará.");
+            }
+        }
+
+        // 3. Cargar desde red para actualizar o si no hay caché
+        if (this.currentLang === langToLoad && Object.keys(this.translations).length > 0) {
+            this.setLanguage(langToLoad, true); // Background update
+        } else {
+            await this.setLanguage(langToLoad); // Blocking load
+        }
     },
 
     /**
-     * Extrae el código de idioma del hash de la URL (ej: #/es/finder -> es)
+     * Extrae el código de idioma del path de la URL (ej: /es/finder -> es)
      */
-    getLangFromHash() {
-        const hash = window.location.hash.slice(1); // Remover '#'
-        if (!hash) return null;
+    getLangFromPath() {
+        let path = window.location.pathname;
+        
+        // Limpiamos el BASE_PATH si existe
+        if (CONFIG.BASE_PATH && path.startsWith(CONFIG.BASE_PATH)) {
+            path = path.replace(CONFIG.BASE_PATH, '');
+        }
+        
+        if (!path.startsWith('/')) path = '/' + path;
 
-        const parts = hash.split('/');
+        const parts = path.split('/');
         // El primer elemento después del primer / suele ser el idioma
         // Ejemplo: /es/finder -> ["", "es", "finder"]
         const langCode = parts[1]; 
@@ -44,21 +70,35 @@ export const i18n = {
     /**
      * Cambia el idioma actual y recarga las traducciones en la UI
      */
-    async setLanguage(lang) {
+    async setLanguage(lang, background = false) {
         if (!CONFIG.SUPPORTED_LANGS.includes(lang)) return;
 
-        try {
-            const response = await fetch(`./locales/${lang}.json`);
-            this.translations = await response.json();
-            this.currentLang = lang;
-            
-            // Persistencia y metadatos
-            localStorage.setItem(CONFIG.STORAGE_KEYS.LANG, lang);
-            document.documentElement.lang = lang;
+        const loadTask = async () => {
+            try {
+                // Fetch con cache-busting sutil para asegurar frescura
+                const response = await fetch(`./locales/${lang}.json?v=${Date.now()}`);
+                const data = await response.json();
+                
+                const dataStr = JSON.stringify(data);
+                const currentStr = JSON.stringify(this.translations);
 
-            this.translatePage();
-        } catch (error) {
-            console.error(`Error cargando el idioma: ${lang}`, error);
+                if (dataStr !== currentStr) {
+                    this.translations = data;
+                    this.currentLang = lang;
+                    localStorage.setItem(`${CONFIG.STORAGE_KEYS.TRANSLATIONS}_${lang}`, dataStr);
+                    localStorage.setItem(CONFIG.STORAGE_KEYS.LANG, lang);
+                    document.documentElement.lang = lang;
+                    this.translatePage();
+                }
+            } catch (error) {
+                console.error(`i18n: Error cargando el idioma: ${lang}`, error);
+            }
+        };
+
+        if (background) {
+            loadTask();
+        } else {
+            await loadTask();
         }
     },
 

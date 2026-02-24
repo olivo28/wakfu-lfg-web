@@ -61,7 +61,7 @@ export const GroupCard = {
                     <button class="btn-delete-tech" data-id="${group.id}" title="${i18n.t('ui.delete')}" onclick="event.stopPropagation(); if(confirm('${i18n.t('lfg.confirm_delete_group')}')) { import('../core/api.js').then(m => m.API.deleteGroup(${group.id}, true).then(() => window.location.reload())); }">🗑️</button>
                 </div>` : ''}
                 <div class="banner-pure">
-                    <img src="assets/mazmos/${dungeonId}.png" class="img-full" onerror="this.src='assets/mazmos/default.png'">
+                    <img src="${CONFIG.BASE_PATH}/assets/mazmos/${dungeonId}.png" class="img-full" onerror="this.src='${CONFIG.BASE_PATH}/assets/mazmos/default.png'">
                 </div>
                 <div class="info-tech-box">
                     <div class="tech-header">
@@ -107,7 +107,7 @@ export const GroupCard = {
                                     const gender = String(m.gender || 0);
                                     return `
                                         <div class="member-unit-mini">
-                                            <img src="assets/classes/emote/${paddedId}${gender}.png" class="emote-mini" title="${escapeHTML(m.name) || '...'}">
+                                            <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${gender}.png" class="emote-mini" title="${escapeHTML(m.name) || '...'}">
                                             <span class="member-name-tag">${escapeHTML(m.name)}</span>
                                         </div>
                                     `;
@@ -121,24 +121,24 @@ export const GroupCard = {
                     <div class="tech-footer">
                         <div class="roles-mini-list">
                             ${rolesNeeded.map(role => `
-                                <img src="assets/roles/${role}.png" 
+                                <img src="${CONFIG.BASE_PATH}/assets/roles/${role}.png" 
                                      class="role-icon-tech" 
                                      title="${i18n.t('roles.' + role)}"
                                      onerror="this.style.display='none'">
                             `).join('')}
                         </div>
                         <div class="status-chips-tech">
-                            <img src="assets/element/${data.dmgType || 'melee'}.png" class="element-icon-tech" title="${i18n.t('dmg_types.' + (data.dmgType || 'melee'))}">
+                            <img src="${CONFIG.BASE_PATH}/assets/element/${data.dmgType || 'melee'}.png" class="element-icon-tech" title="${i18n.t('dmg_types.' + (data.dmgType || 'melee'))}">
                             <div class="elements-mini-list">
-                                ${(data.elements || []).map(el => `<img src="assets/element/${el}.png" class="element-icon-tech" title="${i18n.t('elements.' + el)}">`).join('')}
+                                ${(data.elements || []).map(el => `<img src="${CONFIG.BASE_PATH}/assets/element/${el}.png" class="element-icon-tech" title="${i18n.t('elements.' + el)}">`).join('')}
                             </div>
                             ${isModulated ? `<span class="chip-mod-tech">M</span>` : ''}
-                                ${keyStatus === 'FREE' ? i18n.t('ui.free') : i18n.t('ui.key')}
+                                ${keyStatus === 'FREE' ? `<span class="chip-key-tech free">${i18n.t('ui.free')}</span>` : i18n.t('ui.key')}
                         </div>
                     </div>
                 </div>
 
-                ${canJoin ? `<button class="btn-join-tech" data-id="${group.id}" data-i18n="ui.request_join" onclick="event.stopPropagation();"></button>` : ''}
+                ${canJoin ? `<button class="btn-join-tech" data-id="${group.id}" data-i18n="ui.request_join" onclick="event.stopPropagation();">${i18n.t('ui.request_join')}</button>` : ''}
             </div>
         `;
     }

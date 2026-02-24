@@ -6,6 +6,7 @@ import { LFGModals } from '../components/LFGModals.js';
 import { Modal } from '../components/Modal.js';
 import { Socket } from '../core/Socket.js';
 import { SEO } from '../core/seo.js';
+import { CONFIG } from '../config.js';
 
 const escapeHTML = (str) => {
     if (!str) return '';
@@ -47,7 +48,7 @@ export const GroupDetailPage = {
                 level: data.level || '?', 
                 leader: leaderName 
             }),
-            image: `${window.location.href.split('#')[0]}assets/mazmos/${data.dungeonId}.png`
+            image: `${window.location.origin}${CONFIG.BASE_PATH}/assets/mazmos/${data.dungeonId}.png`
         };
     },
 
@@ -57,8 +58,9 @@ export const GroupDetailPage = {
 
         return `
             <div class="page-container group-detail-layout fade-in" id="group-detail-root">
-                <div class="initial-loader" style="height: 50vh; display: flex; align-items: center; justify-content: center;">
+                <div class="initial-loader" style="height: 50vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px;">
                     <div class="wakfu-spinner"></div>
+                    <p>${i18n.t('ui.loading')}</p>
                 </div>
             </div>
         `;
@@ -145,15 +147,17 @@ export const GroupDetailPage = {
 
         const getBodyAsset = (m) => {
             const charClass = classes.find(c => c.id == m.classId);
-            if (!charClass) return 'assets/classes/body/iop_m.png';
-            return m.gender == 1 ? charClass.assets.female.body : charClass.assets.male.body;
+            if (!charClass) return `${CONFIG.BASE_PATH}/assets/classes/body/iop_m.png`;
+            const genderKey = m.gender == 1 ? 'female' : 'male';
+            const bodyPath = charClass.assets?.[genderKey]?.body;
+            return bodyPath ? `${CONFIG.BASE_PATH}/${bodyPath}` : `${CONFIG.BASE_PATH}/assets/classes/body/iop_m.png`;
         };
 
         return `
             <div class="group-detail-container">
                 <header class="detail-header">
                     <div class="header-banner">
-                        <img src="assets/mazmos/${data.dungeonId}.png" class="banner-img-tech" onerror="this.src='assets/mazmos/default.png'">
+                        <img src="${CONFIG.BASE_PATH}/assets/mazmos/${data.dungeonId}.png" class="banner-img-tech" onerror="this.src='${CONFIG.BASE_PATH}/assets/mazmos/default.png'">
                         <div class="header-overlay">
                             <h1 class="label-tech">${escapeHTML(data.title || dungeonName)}</h1>
                             <p class="text-dim">${escapeHTML(dungeonName)} — ${i18n.t('profile.level_short')} ${levelDisplay} ${isModulated ? `(${i18n.t('dungeon.modulated')})` : ''}</p>
@@ -177,11 +181,11 @@ export const GroupDetailPage = {
                                         </div>
                                         <div class="char-stats-row">
                                             <div class="roles-chips-container">
-                                                ${(m.roles || []).map(r => `<img src="assets/roles/${r}.png" class="role-icon-mini" title="${r}">`).join('')}
+                                                ${(m.roles || []).map(r => `<img src="${CONFIG.BASE_PATH}/assets/roles/${r}.png" class="role-icon-mini" title="${r}">`).join('')}
                                             </div>
                                             <div class="elements-chips-container">
-                                                ${(m.elements || []).map(e => `<img src="assets/element/${e}.png" class="element-icon-mini" title="${e}">`).join('')}
-                                                ${m.dmgType ? `<img src="assets/element/${m.dmgType}.png" class="element-icon-mini" title="${m.dmgType}">` : ''}
+                                                ${(m.elements || []).map(e => `<img src="${CONFIG.BASE_PATH}/assets/element/${e}.png" class="element-icon-mini" title="${e}">`).join('')}
+                                                ${m.dmgType ? `<img src="${CONFIG.BASE_PATH}/assets/element/${m.dmgType}.png" class="element-icon-mini" title="${m.dmgType}">` : ''}
                                             </div>
                                         </div>
                                     </div>
@@ -253,9 +257,9 @@ export const GroupDetailPage = {
 
                             ${(group.createdAt || group.updatedAt) ? `
                                 <div class="admin-metadata-panel" style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 10px; color: var(--text-dim);">
-                                    ${group.createdAt ? `<div><strong>${i18n.t('ui.created') || 'CREADO'}:</strong> ${new Date(group.createdAt).toLocaleString()}</div>` : ''}
-                                    ${group.updatedAt ? `<div><strong>${i18n.t('ui.updated') || 'ACTUALIZADO'}:</strong> ${new Date(group.updatedAt).toLocaleString()}</div>` : ''}
-                                    ${group.isAdminView ? `<div style="color: var(--accent-color); margin-top: 4px;">[MODO ADMIN]</div>` : ''}
+                                    ${group.createdAt ? `<div><strong>${i18n.t('ui.created')}:</strong> ${new Date(group.createdAt).toLocaleString()}</div>` : ''}
+                                    ${group.updatedAt ? `<div><strong>${i18n.t('ui.updated')}:</strong> ${new Date(group.updatedAt).toLocaleString()}</div>` : ''}
+                                    ${group.isAdminView ? `<div style="color: var(--accent-color); margin-top: 4px;">[${i18n.t('ui.admin_mode')}]</div>` : ''}
                                 </div>
                             ` : ''}
 
@@ -264,7 +268,7 @@ export const GroupDetailPage = {
                             <h4 class="label-tech mini-label">${i18n.t('lfg.roles_title')}</h4>
                             <div class="roles-flex">
                                 ${(data.roles_needed || data.rolesNeeded || []).map(r => `
-                                    <img src="assets/roles/${r}.png" class="role-icon-detail" title="${i18n.t('roles.' + r)}">
+                                    <img src="${CONFIG.BASE_PATH}/assets/roles/${r}.png" class="role-icon-detail" title="${i18n.t('roles.' + r)}">
                                 `).join('')}
                             </div>
 
@@ -274,7 +278,7 @@ export const GroupDetailPage = {
                                 <div class="dmg-el-col">
                                     <span class="mini-col-label">${i18n.t('lfg.dmg_title')}</span>
                                     <div class="roles-flex">
-                                        <img src="assets/element/${data.dmgType}.png" class="role-icon-detail" title="${i18n.t('dmg_types.' + data.dmgType)}">
+                                        <img src="${CONFIG.BASE_PATH}/assets/element/${data.dmgType}.png" class="role-icon-detail" title="${i18n.t('dmg_types.' + data.dmgType)}">
                                     </div>
                                 </div>` : ''}
                                 ${data.dmgType && (data.elements || []).length > 0 ? '<div class="col-sep"></div>' : ''}
@@ -283,7 +287,7 @@ export const GroupDetailPage = {
                                     <span class="mini-col-label">${i18n.t('lfg.elements_title')}</span>
                                     <div class="roles-flex">
                                         ${(data.elements || []).map(el => `
-                                            <img src="assets/element/${el}.png" class="role-icon-detail" title="${i18n.t('elements.' + el)}">
+                                            <img src="${CONFIG.BASE_PATH}/assets/element/${el}.png" class="role-icon-detail" title="${i18n.t('elements.' + el)}">
                                         `).join('')}
                                     </div>
                                 </div>` : ''}
@@ -301,7 +305,7 @@ export const GroupDetailPage = {
                                         const isMyOwnRequest = String(req.requester_id || req.requesterId) === String(user.id);
                                         return `
                                         <div class="mini-req-item ${isMyOwnRequest ? 'own-request' : ''}">
-                                            <img src="assets/classes/emote/${classId}${gender}.png" class="emote-mini">
+                                            <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${classId}${gender}.png" class="emote-mini">
                                             <div class="mini-req-info">
                                                 <span class="mini-name">${escapeHTML(ch.name || '???')} ${isMyOwnRequest ? `<small>(${i18n.t('ui.me')})</small>` : ''}</span>
                                                 <span class="mini-lvl">${i18n.t('profile.level_short')} ${ch.level || '?'}</span>
@@ -318,7 +322,7 @@ export const GroupDetailPage = {
 
                         ${canManage ? `
                             <div class="leader-panel-tech admin-control-panel" style="border-color: rgba(0,255,150,0.2);">
-                                <h3 class="label-tech" style="color: var(--accent-color);">${(i18n.t('ui.actions') || 'Gestión')}</h3>
+                                <h3 class="label-tech" style="color: var(--accent-color);">${i18n.t('ui.actions')}</h3>
                                 
                                 ${group.is_active !== false ? `
                                     <div class="action-panel-tech shared-actions" style="margin-top: 10px;">
@@ -360,7 +364,7 @@ export const GroupDetailPage = {
                                         const gender = ch.gender || 0;
                                         return `
                                         <div class="mini-req-item">
-                                            <img src="assets/classes/emote/${classId}${gender}.png" class="emote-mini">
+                                            <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${classId}${gender}.png" class="emote-mini">
                                             <div class="mini-req-info">
                                                 <span class="mini-name">${escapeHTML(ch.name || '???')}</span>
                                                 <span class="mini-lvl" data-i18n="lfg.status_pending">${i18n.t('lfg.status_pending').toUpperCase()}</span>
@@ -475,7 +479,7 @@ export const GroupDetailPage = {
         });
 
         document.querySelector('.btn-delete-group-perm')?.addEventListener('click', async () => {
-            if (!await Modal.confirm(i18n.t('lfg.confirm_delete_permanent') || '¿Eliminar permanentemente?')) return;
+            if (!await Modal.confirm(i18n.t('lfg.confirm_delete_permanent'))) return;
             try {
                 await API.deleteGroup(GroupDetailPage.group.id, true);
                 Router.navigateTo('/finder');

@@ -1,5 +1,9 @@
 export const CONFIG = {
     APP_NAME: "Wakfu LFG",
+    // BASE_PATH dinámico: detectamos si estamos en GitHub Pages (subdir) o root
+    BASE_PATH: (window.location.hostname.includes('github.io') || window.location.pathname.startsWith('/wakfu-lfg-web')) 
+        ? '/wakfu-lfg-web' 
+        : '',
     
     // URL de tu API Node.js (Backend)
     API_URL: "https://wakfu.pcnetfs.moe",
@@ -36,6 +40,7 @@ export const CONFIG = {
         USER_DATA: 'lfg_user',
         SETTINGS: 'lfg_settings',
         LANG: 'lfg_lang',
+        TRANSLATIONS: 'lfg_translations',
         THEME: 'lfg_theme'
     }
 };

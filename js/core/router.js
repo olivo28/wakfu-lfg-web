@@ -21,19 +21,7 @@ export const Router = {
     currentPath: '',
 
     init() {
-        // Redirección si entran por ruta limpia (ej: /profile -> /#/profile)
-        // Optimizamos para evitar redirecciones infinitas o incorrectas en subdirectorios (GitHub Pages)
-        if (window.location.pathname !== '/' && !window.location.hash) {
-            const path = window.location.pathname;
-            
-            // Si termina en / o parece un archivo (tiene punto), NO redirigimos al hash
-            // ya que suele ser el index de la carpeta raíz o subcarpeta.
-            if (!path.endsWith('/') && !path.includes('.')) {
-                window.location.replace(`/#${path}${window.location.search}`);
-                return;
-            }
-        }
-
+        // Manejo de clicks en links con [data-link]
         document.body.addEventListener('click', e => {
             const link = e.target.closest('[data-link]');
             if (link) {
@@ -43,11 +31,18 @@ export const Router = {
             }
         });
 
-        window.addEventListener('hashchange', () => this.route());
+        // Evento para botones atrás/adelante del navegador
+        window.addEventListener('popstate', () => this.route());
+        
+        // Primera carga
         this.route();
     },
 
+    /**
+     * Navega a una ruta sin recargar la página (History API)
+     */
     navigateTo(path) {
+        // Limpiamos el path de hashes accidentales de la migración
         let cleanPath = path.replace(/^#+/, '');
         if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
 
@@ -60,23 +55,38 @@ export const Router = {
             cleanPath = `/${currentLang}${cleanPath}`;
         }
 
-        window.location.hash = `#${cleanPath}`;
+        // URL Final incluyendo el BASE_PATH para GitHub Pages
+        const finalUrl = `${CONFIG.BASE_PATH}${cleanPath}`;
+        
+        window.history.pushState(null, null, finalUrl);
+        this.route();
     },
 
+    /**
+     * Procesa la URL actual y renderiza la vista correspondiente
+     */
     async route() {
-        let fullHash = window.location.hash.slice(1) || '/';
-        if (!fullHash.startsWith('/')) fullHash = '/' + fullHash;
-
-        const parts = fullHash.split('#');
-        const urlPart = parts[0].split('?')[0];
-        const pathParts = urlPart.split('/');
+        let fullPath = window.location.pathname;
         
-        const lang = pathParts[1];
+        // 1. Limpiar el BASE_PATH de la URL para procesar internamente
+        if (CONFIG.BASE_PATH && fullPath.startsWith(CONFIG.BASE_PATH)) {
+            fullPath = fullPath.replace(CONFIG.BASE_PATH, '');
+        }
+        if (!fullPath || fullPath === '') fullPath = '/';
+        if (!fullPath.startsWith('/')) fullPath = '/' + fullPath;
+
+        // Separar Path de Query Params (?token=...)
+        const urlParts = fullPath.split('?');
+        const pathPart = urlParts[0];
+        const queryString = urlParts[1] || '';
+        
+        const pathSegments = pathPart.split('/');
+        const lang = pathSegments[1];
         
         // 1. Verificación de idioma en la URL
         if (!CONFIG.SUPPORTED_LANGS.includes(lang)) {
             // Si no hay idioma válido, redirigimos usando navigateTo que lo añadirá
-            this.navigateTo(fullHash);
+            this.navigateTo(fullPath + (queryString ? '?' + queryString : ''));
             return;
         }
 
@@ -91,31 +101,22 @@ export const Router = {
         }
 
         // 3. Determinar el path interno para el mapeo de rutas
-        const internalPath = '/' + (pathParts[2] || '');
+        const internalPath = '/' + (pathSegments[2] || '');
         
         const isSamePath = (this.currentPath === internalPath);
-        const hasSubHash = parts.length > 1;
         this.currentPath = internalPath;
 
         // Extracción de parámetros dinámicos (ajustado para prefijo /lang/...)
-        if (pathParts[2] === 'group' && pathParts[3]) {
-            this.params.id = pathParts[3];
+        if (pathSegments[2] === 'group' && pathSegments[3]) {
+            this.params.id = pathSegments[3];
         } else {
             this.params.id = null;
         }
 
+        // 4. Manejo de Tokens (Discord Login)
         let token = null;
-        if (window.location.search.includes('token=')) {
-            const urlParams = new URLSearchParams(window.location.search);
-            token = urlParams.get('token');
-        } else if (window.location.hash.includes('token=')) {
-            // Check inside the hash as well, e.g. #?token=...
-            const hashParts = window.location.hash.split('?');
-            if (hashParts.length > 1) {
-                const urlParams = new URLSearchParams('?' + hashParts[1]);
-                token = urlParams.get('token');
-            }
-        }
+        const urlParams = new URLSearchParams(window.location.search);
+        token = urlParams.get('token');
 
         if (token) {
             localStorage.setItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN, token);
@@ -125,6 +126,7 @@ export const Router = {
             } catch (e) {
                 console.error("Error updating Header:", e);
             }
+            // Limpiar URL eliminando el token de la barra de direcciones
             this.navigateTo('/profile');
             return;
         }
@@ -132,11 +134,12 @@ export const Router = {
         const page = routes[internalPath] || routes['/'];
         const appContainer = document.getElementById('app');
         
-        // Si es el mismo path y solo cambió el hash secundario, NO limpiamos ni mostramos loader
+        // En History API no solemos tener hash secundarios como /profile#settings
+        // pero lo mantenemos por si el usuario usa anclas
+        const hasSubHash = window.location.hash.length > 0;
+
         if (isSamePath && hasSubHash) {
             if (page.onHashChange) await page.onHashChange();
-            
-            // SEO Update on sub-hash change (optional but recommended for tab-system)
             if (page.getSEOData) {
                 SEO.update(await page.getSEOData());
             }
@@ -150,7 +153,12 @@ export const Router = {
         }
 
         // Loader solo si cambiamos de página real
-        appContainer.innerHTML = '<div class="initial-loader"><div class="wakfu-spinner"></div></div>';
+        appContainer.innerHTML = `
+            <div class="initial-loader">
+                <div class="wakfu-spinner"></div>
+                <p>${i18n.t('ui.loading')}</p>
+            </div>
+        `;
 
         try {
             appContainer.innerHTML = await page.render();

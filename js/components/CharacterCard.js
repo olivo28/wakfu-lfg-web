@@ -1,5 +1,6 @@
 import { i18n } from '../core/i18n.js';
 import { API } from '../core/api.js';
+import { CONFIG } from '../config.js';
 
 const escapeHTML = (str) => {
     if (!str) return '';
@@ -46,7 +47,7 @@ export const CharacterCard = {
 
                     <div class="char-banner-overlay">
                         <span class="char-lvl-badge">
-                            <span data-i18n="profile.level_short">LVL</span> ${levelDisplay}
+                            <span data-i18n="profile.level_short">${i18n.t('profile.level_short')}</span> ${levelDisplay}
                         </span>
                         <div class="char-class-info-banner">
                             <span class="char-class-name" id="char-class-${char.id}">${className}</span>
@@ -67,7 +68,7 @@ export const CharacterCard = {
                             <span class="label-tech" style="font-size: 8px;" data-i18n="roles.title">Roles</span>
                             <div class="roles-chips-container">
                                 ${char.roles.map(role => `
-                                    <img src="assets/roles/${role}.png" class="role-icon-mini" title="${i18n.t('roles.' + role)}">
+                                    <img src="${CONFIG.BASE_PATH}/assets/roles/${role}.png" class="role-icon-mini" title="${i18n.t('roles.' + role)}">
                                 `).join('')}
                             </div>
                         </div>
@@ -76,7 +77,7 @@ export const CharacterCard = {
                             <span class="label-tech" style="font-size: 8px;" data-i18n="profile.elements_short">Elementos</span>
                             <div class="elements-chips-container">
                                 ${char.elements.map(el => `
-                                    <img src="assets/element/${el}.png" class="element-icon-mini" title="${i18n.t('elements.' + el)}">
+                                    <img src="${CONFIG.BASE_PATH}/assets/element/${el}.png" class="element-icon-mini" title="${i18n.t('elements.' + el)}">
                                 `).join('')}
                             </div>
                         </div>
@@ -113,7 +114,7 @@ export const CharacterCard = {
         return `
             <div class="compact-char-card" data-id="${char.id}">
                 <div class="compact-char-left">
-                    <img src="assets/classes/emote/${paddedId}${char.gender}.png" class="emote-mini" title="${className}">
+                    <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${char.gender}.png" class="emote-mini" title="${className}">
                     <div class="compact-info-col">
                         <span class="compact-name">${escapeHTML(char.name)}</span>
                         <span class="compact-lvl">${i18n.t('profile.level_short')} ${levelDisplay}</span>
@@ -121,7 +122,7 @@ export const CharacterCard = {
                 </div>
                 <div class="char-roles-mini">
                     ${char.roles.map(role => `
-                        <img src="assets/roles/${role}.png" class="role-icon-mini" title="${i18n.t('roles.' + role)}">
+                        <img src="${CONFIG.BASE_PATH}/assets/roles/${role}.png" class="role-icon-mini" title="${i18n.t('roles.' + role)}">
                     `).join('')}
                 </div>
             </div>

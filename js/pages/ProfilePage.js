@@ -61,7 +61,7 @@ export const ProfilePage = {
                 <div class="characters-grid" id="char-list">
                     ${characters.length > 0 
                         ? characters.map(char => CharacterCard.render(char, ProfilePage.masterClasses)).join('')
-                        : `<div class="empty-state"><p data-i18n="profile.no_chars">No tienes personajes registrados.</p></div>`
+                        : `<div class="empty-state"><p data-i18n="profile.no_chars">${i18n.t('profile.no_chars')}</p></div>`
                     }
                 </div>
             `;
@@ -83,7 +83,7 @@ export const ProfilePage = {
                         return `
                         <div class="request-card-premium card-clickable" data-group-id="${req.LfgGroup?.groupId}">
                             <div class="req-side-banner">
-                                <img src="assets/mazmos/${dungeonId}.png" onerror="this.src='assets/mazmos/default.png'">
+                                <img src="${CONFIG.BASE_PATH}/assets/mazmos/${dungeonId}.png" onerror="this.src='${CONFIG.BASE_PATH}/assets/mazmos/default.png'">
                             </div>
                             <div class="req-content-main">
                                 <div class="req-info-header">
@@ -97,24 +97,24 @@ export const ProfilePage = {
                                     </div>
                                 </div>
                                 <div class="req-group-context">
-                                    <span class="text-dim-mini" data-i18n="lfg.my_group">Mi Grupo</span>
+                                    <span class="text-dim-mini" data-i18n="lfg.my_group">${i18n.t('lfg.my_group')}</span>
                                     <div class="req-mini-members">
-                                        ${members.map(m => `<img src="assets/classes/emote/${String(m.classId).padStart(2, '0')}${m.gender || 0}.png" title="${m.name}" class="emote-tiny">`).join('')}
+                                        ${members.map(m => `<img src="${CONFIG.BASE_PATH}/assets/classes/emote/${String(m.classId).padStart(2, '0')}${m.gender || 0}.png" title="${m.name}" class="emote-tiny">`).join('')}
                                     </div>
                                 </div>
                             </div>
                             <div class="req-actions-panel">
                                 <div class="applicant-bubble">
-                                    <img src="assets/classes/emote/${String(app.classId).padStart(2, '0')}${app.gender || 0}.png" class="emote-applicant">
+                                    <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${String(app.classId).padStart(2, '0')}${app.gender || 0}.png" class="emote-applicant">
                                     <span class="name-applicant">${app.name}</span>
                                 </div>
                                 <div class="btn-group-vertical">
-                                    <button class="btn btn-xs btn-accent btn-accept" data-id="${req.id}" data-i18n="lfg.accept">ACEPTAR</button>
-                                    <button class="btn btn-xs btn-delete-char btn-reject" data-id="${req.id}" data-i18n="lfg.reject">RECHAZAR</button>
+                                    <button class="btn btn-xs btn-accent btn-accept" data-id="${req.id}" data-i18n="lfg.accept">${i18n.t('lfg.accept')}</button>
+                                    <button class="btn btn-xs btn-delete-char btn-reject" data-id="${req.id}" data-i18n="lfg.reject">${i18n.t('lfg.reject')}</button>
                                 </div>
                             </div>
                         </div>`;
-                    }).join('') : '<div class="empty-state-mini" data-i18n="profile.no_received_requests">No hay solicitudes pendientes.</div>'}
+                    }).join('') : `<div class="empty-state-mini" data-i18n="profile.no_received_requests">${i18n.t('profile.no_received_requests')}</div>`}
                 </div>
             `;
         } else if (tab === 'sent') {
@@ -136,7 +136,7 @@ export const ProfilePage = {
                 return `
                 <div class="request-card-premium card-clickable" data-group-id="${req.LfgGroup?.groupId}">
                     <div class="req-side-banner">
-                        <img src="assets/mazmos/${dungeonId}.png" onerror="this.src='assets/mazmos/default.png'">
+                        <img src="${CONFIG.BASE_PATH}/assets/mazmos/${dungeonId}.png" onerror="this.src='${CONFIG.BASE_PATH}/assets/mazmos/default.png'">
                         <div class="status-indicator status-${status}"></div>
                     </div>
                     <div class="req-content-main">
@@ -151,9 +151,9 @@ export const ProfilePage = {
                             </div>
                         </div>
                         <div class="req-group-context">
-                            <span class="text-dim-mini"><span data-i18n="lfg.leader">Líder</span>: <b>${req.LfgGroup?.creator_name || ''}</b></span>
+                            <span class="text-dim-mini"><span data-i18n="lfg.leader">${i18n.t('lfg.leader')}</span>: <b>${req.LfgGroup?.creator_name || ''}</b></span>
                             <div class="req-mini-members">
-                                ${members.map(m => `<img src="assets/classes/emote/${String(m.classId).padStart(2, '0')}${m.gender || 0}.png" title="${m.name}" class="emote-tiny">`).join('')}
+                                ${members.map(m => `<img src="${CONFIG.BASE_PATH}/assets/classes/emote/${String(m.classId).padStart(2, '0')}${m.gender || 0}.png" title="${m.name}" class="emote-tiny">`).join('')}
                             </div>
                         </div>
                     </div>
@@ -163,7 +163,7 @@ export const ProfilePage = {
                             <span class="text-dim-mini">${req.requesterCharacter?.name || ''}</span>
                         </div>
                         <div class="btn-group-vertical">
-                            ${status === 'pending' ? `<button class="btn btn-xs btn-dim btn-cancel-req" data-id="${req.id}" data-i18n="lfg.cancel">CANCELAR</button>` : ''}
+                            ${status === 'pending' ? `<button class="btn btn-xs btn-dim btn-cancel-req" data-id="${req.id}" data-i18n="lfg.cancel">${i18n.t('lfg.cancel')}</button>` : ''}
                         </div>
                     </div>
                 </div>`;
@@ -171,15 +171,15 @@ export const ProfilePage = {
 
             let html = '';
             if (pending.length > 0) {
-                html += `<div class="tab-section-header" data-i18n="lfg.pending_requests">Pendientes</div>`;
+                html += `<div class="tab-section-header" data-i18n="lfg.pending_requests">${i18n.t('lfg.pending_requests')}</div>`;
                 html += `<div class="requests-premium-grid">${pending.map(renderCard).join('')}</div>`;
             }
             if (resolved.length > 0) {
-                html += `<div class="tab-section-header" data-i18n="lfg.resolved_requests">Resueltas</div>`;
+                html += `<div class="tab-section-header" data-i18n="lfg.resolved_requests">${i18n.t('lfg.resolved_requests')}</div>`;
                 html += `<div class="requests-premium-grid">${resolved.map(renderCard).join('')}</div>`;
             }
             if (sent.length === 0) {
-                html += '<div class="empty-state-mini" data-i18n="profile.no_sent_requests">No has enviado ninguna solicitud.</div>';
+                html += `<div class="empty-state-mini" data-i18n="profile.no_sent_requests">${i18n.t('profile.no_sent_requests')}</div>`;
             }
             return html;
         } else if (tab === 'notifs') {
@@ -188,7 +188,7 @@ export const ProfilePage = {
 
             // Load mazmos for name resolution
             let mazmos = [];
-            try { mazmos = await fetch('./assets/data/mazmos.json').then(r => r.json()); } catch(e) {}
+            try { mazmos = await fetch(`${CONFIG.BASE_PATH}/assets/data/mazmos.json`).then(r => r.json()); } catch(e) {}
             const lang = localStorage.getItem('lang') || 'es';
 
             const resolveName = (d) => {
@@ -213,7 +213,7 @@ export const ProfilePage = {
                         <span class="notif-history-msg">${msg}</span>
                         <span class="notif-history-date">${date}</span>
                     </div>
-                    <button class="notif-history-dismiss" data-notif-id="${n.id}" title="Descartar">×</button>
+                    <button class="notif-history-dismiss" data-notif-id="${n.id}" title="${i18n.t('ui.dismiss')}">×</button>
                 </div>`;
             };
 
@@ -222,14 +222,14 @@ export const ProfilePage = {
 
             let html = '<div class="notif-history-list" id="notif-history-list">';
             if (all.length === 0) {
-                html += `<div class="empty-state-mini">${i18n.t('notifs.empty') || 'No hay notificaciones.'}</div>`;
+                html += `<div class="empty-state-mini">${i18n.t('notifs.empty')}</div>`;
             } else {
                 if (unread.length > 0) {
-                    html += `<div class="tab-section-header">🔴 ${i18n.t('profile.notifs_unread') || 'SIN LEER'}</div>`;
+                    html += `<div class="tab-section-header">🔴 ${i18n.t('profile.notifs_unread')}</div>`;
                     html += unread.map(renderRow).join('');
                 }
                 if (read.length > 0) {
-                    html += `<div class="tab-section-header">${i18n.t('profile.notifs_read') || 'LEÍDAS'}</div>`;
+                    html += `<div class="tab-section-header">${i18n.t('profile.notifs_read')}</div>`;
                     html += read.map(renderRow).join('');
                 }
             }
@@ -275,7 +275,7 @@ export const ProfilePage = {
                 return `
                 <div class="request-card-premium card-clickable" data-group-id="${group.id || data.groupId}">
                     <div class="req-side-banner">
-                        <img src="assets/mazmos/${data.dungeonId}.png" onerror="this.src='assets/mazmos/default.png'">
+                        <img src="${CONFIG.BASE_PATH}/assets/mazmos/${data.dungeonId}.png" onerror="this.src='${CONFIG.BASE_PATH}/assets/mazmos/default.png'">
                     </div>
                     <div class="req-content-main">
                         <div class="req-info-header">
@@ -291,7 +291,7 @@ export const ProfilePage = {
                         </div>
                         <div class="req-group-context">
                             <div class="req-mini-members">
-                                ${members.map(m => `<img src="assets/classes/emote/${String(m.classId || 1).padStart(2, '0')}${m.gender || 0}.png" title="${m.name}" class="emote-tiny">`).join('')}
+                                ${members.map(m => `<img src="${CONFIG.BASE_PATH}/assets/classes/emote/${String(m.classId || 1).padStart(2, '0')}${m.gender || 0}.png" title="${m.name}" class="emote-tiny">`).join('')}
                             </div>
                         </div>
                     </div>
@@ -314,14 +314,14 @@ export const ProfilePage = {
                 
                 <div class="teams-history-container">
                     ${activeGroups.length > 0 ? `
-                        <div class="tab-section-header" style="margin-top:0">${(i18n.t('filters.with_groups') || 'Grupos activos')}</div>
+                        <div class="tab-section-header" style="margin-top:0">${i18n.t('filters.with_groups')}</div>
                         <div class="requests-premium-grid">
                             ${activeGroups.map(renderGroupCard).join('')}
                         </div>
                     ` : ''}
 
                     ${closedGroups.length > 0 ? `
-                        <div class="tab-section-header" style="margin-top: 30px;">${(i18n.t('profile.tab_teams_title') || 'Historial (Cerrados)')}</div>
+                        <div class="tab-section-header" style="margin-top: 30px;">${i18n.t('profile.tab_teams_title')}</div>
                         <div class="requests-premium-grid">
                             ${closedGroups.map(renderGroupCard).join('')}
                         </div>
@@ -343,13 +343,17 @@ export const ProfilePage = {
             return '';
         }
 
-        // Deep linking: leer tab del hash secundario
-        const secondaryHash = window.location.hash.split('#')[2];
-        if (secondaryHash) {
-            if (secondaryHash === 'characters') ProfilePage.currentTab = 'chars';
-            else if (secondaryHash === 'sended') ProfilePage.currentTab = 'sent';
-            else if (secondaryHash === 'mygroups') ProfilePage.currentTab = 'groups';
-            else if (secondaryHash === 'history') ProfilePage.currentTab = 'teams';
+        // Reset local filters/state on fresh navigation
+        ProfilePage.teamsSearchTerm = '';
+
+        // Deep linking: leer tab del hash
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            if (hash === 'characters') ProfilePage.currentTab = 'chars';
+            else if (hash === 'sended') ProfilePage.currentTab = 'sent';
+            else if (hash === 'mygroups') ProfilePage.currentTab = 'groups';
+            else if (hash === 'history') ProfilePage.currentTab = 'teams';
+            else if (hash === 'notifications') ProfilePage.currentTab = 'notifs';
         } else {
             ProfilePage.currentTab = 'chars';
         }
@@ -373,19 +377,19 @@ export const ProfilePage = {
 
                     <nav class="sidebar-menu">
                         <div class="sidebar-menu-item ${ProfilePage.currentTab === 'chars' ? 'active' : ''}" data-tab="chars">
-                            <i>👤</i> <span data-i18n="profile.sidebar_chars">MI EQUIPO</span>
+                            <i>👤</i> <span data-i18n="profile.sidebar_chars">${i18n.t('profile.sidebar_chars')}</span>
                         </div>
                         <div class="sidebar-menu-item ${ProfilePage.currentTab === 'groups' ? 'active' : ''}" data-tab="groups">
-                            <i>⚔️</i> <span data-i18n="profile.sidebar_requests">SOLICITUDES</span>
+                            <i>⚔️</i> <span data-i18n="profile.sidebar_requests">${i18n.t('profile.sidebar_requests')}</span>
                         </div>
                         <div class="sidebar-menu-item ${ProfilePage.currentTab === 'sent' ? 'active' : ''}" data-tab="sent">
-                            <i>✉️</i> <span data-i18n="profile.sidebar_sent">ENVIADAS</span>
+                            <i>✉️</i> <span data-i18n="profile.sidebar_sent">${i18n.t('profile.sidebar_sent')}</span>
                         </div>
                         <div class="sidebar-menu-item ${ProfilePage.currentTab === 'teams' ? 'active' : ''}" data-tab="teams">
-                            <i>📜</i> <span data-i18n="profile.sidebar_teams">MIS EQUIPOS</span>
+                            <i>📜</i> <span data-i18n="profile.sidebar_teams">${i18n.t('profile.sidebar_teams')}</span>
                         </div>
                         <div class="sidebar-menu-item ${ProfilePage.currentTab === 'notifs' ? 'active' : ''}" data-tab="notifs">
-                            <i>🔔</i> <span data-i18n="profile.sidebar_notifs">NOTIFICACIONES</span>
+                            <i>🔔</i> <span data-i18n="profile.sidebar_notifs">${i18n.t('profile.sidebar_notifs')}</span>
                         </div>
                     </nav>
 
@@ -393,7 +397,7 @@ export const ProfilePage = {
                         <div id="sidebar-action-container">
                             ${ProfilePage.currentTab === 'chars' ? `
                                 <button class="btn btn-accent btn-block" id="btn-add-char">
-                                    <span data-i18n="profile.add_char">+ AÑADIR PERSONAJE</span>
+                                    <span data-i18n="profile.add_char">${i18n.t('profile.add_char')}</span>
                                 </button>
                             ` : ''}
                         </div>
@@ -401,8 +405,9 @@ export const ProfilePage = {
                 </aside>
                 <main class="profile-main-content">
                     <div class="tab-content-wrapper" id="profile-tab-content">
-                        <div class="initial-loader" style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                        <div class="initial-loader" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px;">
                             <div class="wakfu-spinner"></div>
+                            <p>${i18n.t('ui.loading')}</p>
                         </div>
                     </div>
                 </main>
@@ -443,7 +448,7 @@ export const ProfilePage = {
         if (actionContainer) {
             actionContainer.innerHTML = tab === 'chars' ? `
                 <button class="btn btn-accent btn-block" id="btn-add-char">
-                    <span data-i18n="profile.add_char">+ AÑADIR PERSONAJE</span>
+                    <span data-i18n="profile.add_char">${i18n.t('profile.add_char')}</span>
                 </button>
             ` : '';
             // Re-bind add char button if it's there
@@ -483,13 +488,13 @@ export const ProfilePage = {
      * Reaccionar a cambios de hash del navegador (Atrás/Adelante)
      */
     onHashChange: async () => {
-        const secondaryHash = window.location.hash.split('#')[2];
+        const hash = window.location.hash.replace('#', '');
         let tab = 'chars';
-        if (secondaryHash === 'characters') tab = 'chars';
-        else if (secondaryHash === 'sended') tab = 'sent';
-        else if (secondaryHash === 'mygroups') tab = 'groups';
-        else if (secondaryHash === 'history') tab = 'teams';
-        else if (secondaryHash === 'notifications') tab = 'notifs';
+        if (hash === 'characters') tab = 'chars';
+        else if (hash === 'sended') tab = 'sent';
+        else if (hash === 'mygroups') tab = 'groups';
+        else if (hash === 'history') tab = 'teams';
+        else if (hash === 'notifications') tab = 'notifs';
 
         if (tab !== ProfilePage.currentTab) {
             await ProfilePage.switchTab(tab, false);
@@ -503,7 +508,7 @@ export const ProfilePage = {
         }
         if (!ProfilePage.dungeonData) {
             try {
-                const res = await fetch('assets/data/mazmos.json');
+                const res = await fetch(`${CONFIG.BASE_PATH}/assets/data/mazmos.json`)
                 ProfilePage.dungeonData = await res.json();
             } catch (e) { ProfilePage.dungeonData = []; }
         }
@@ -691,23 +696,23 @@ export const ProfilePage = {
                 <!-- COMPACT ROW: NAME, GENDER, LEVEL, SERVER -->
                 <div class="form-row">
                     <div class="filter-group" style="flex: 3;">
-                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.name"></label>
+                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.name">${i18n.t('profile.name')}</label>
                         <input type="text" id="char-name" class="input-tech" placeholder="Ej: Tristepin" value="${isEdit ? char.name : ''}" required>
                     </div>
                     <div class="filter-group" style="flex: 2;">
-                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.gender"></label>
+                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.gender">${i18n.t('profile.gender')}</label>
                         <select id="char-gender" class="input-tech">
-                            <option value="0" ${isEdit && char.gender === 0 ? 'selected' : ''} data-i18n="profile.male"></option>
-                            <option value="1" ${isEdit && char.gender === 1 ? 'selected' : ''} data-i18n="profile.female"></option>
+                            <option value="0" ${isEdit && char.gender === 0 ? 'selected' : ''} data-i18n="profile.male">${i18n.t('profile.male')}</option>
+                            <option value="1" ${isEdit && char.gender === 1 ? 'selected' : ''} data-i18n="profile.female">${i18n.t('profile.female')}</option>
                         </select>
                     </div>
                     <div class="filter-group" style="flex: 1; min-width: 80px; position: relative;">
-                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="home.filter_lvl"></label>
+                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="home.filter_lvl">${i18n.t('home.filter_lvl')}</label>
                         <input type="number" id="char-level" class="input-tech" min="1" max="245" value="${isEdit ? char.level : '245'}">
-                        <small id="level-error" style="display:none; color: #ff4444; font-size: 10px; position: absolute; bottom: -18px; left: 0; white-space: nowrap;" data-i18n="profile.max_level_error"></small>
+                        <small id="level-error" style="display:none; color: #ff4444; font-size: 10px; position: absolute; bottom: -18px; left: 0; white-space: nowrap;" data-i18n="profile.max_level_error">${i18n.t('profile.max_level_error')}</small>
                     </div>
                     <div class="filter-group" style="flex: 2;">
-                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="home.filter_server"></label>
+                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="home.filter_server">${i18n.t('home.filter_server')}</label>
                         <select id="char-server" class="input-tech" style="max-width: 100%;">
                             ${CONFIG.SERVERS.map(s => `<option value="${s}" ${isEdit && char.server === s ? 'selected' : ''}>${s}</option>`).join('')}
                         </select>
@@ -715,7 +720,7 @@ export const ProfilePage = {
                 </div>
 
                 <div class="filter-group">
-                    <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.class"></label>
+                    <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.class">${i18n.t('profile.class')}</label>
                     <input type="hidden" id="char-class" value="${isEdit ? char.classId : '1'}">
                     
                     <!-- NEW LIST LAYOUT -->
@@ -724,7 +729,7 @@ export const ProfilePage = {
                             <div class="class-card ${(isEdit ? char.classId === c.id : c.id === 1) ? 'selected' : ''}" 
                                  data-id="${c.id}" 
                                  onclick="window.tempSelectClass(this, ${c.id})">
-                                <img src="assets/classes/emote/${c.id.toString().padStart(2, '0')}${isEdit ? char.gender : '0'}.png" 
+                                <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${c.id.toString().padStart(2, '0')}${isEdit ? char.gender : '0'}.png" 
                                      id="class-img-${c.id}"
                                      alt="${c.names[lang]}">
                                 <span>${c.names[lang]}</span>
@@ -734,14 +739,14 @@ export const ProfilePage = {
                 </div>
 
                 <div class="filter-group">
-                    <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.main_roles"></label>
+                    <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.main_roles">${i18n.t('profile.main_roles')}</label>
                     <div class="roles-selection-visual">
                         ${CONFIG.ROLES.map(role => `
                             <label class="role-option-card">
                                 <input type="checkbox" name="roles" value="${role}" ${isEdit && char.roles?.includes(role) ? 'checked' : ''}>
                                 <div class="role-content">
-                                    <img src="assets/roles/${role}.png" alt="${role}" onerror="this.style.display='none'">
-                                    <span data-i18n="roles.${role}"></span>
+                                    <img src="${CONFIG.BASE_PATH}/assets/roles/${role}.png" alt="${role}" onerror="this.style.display='none'">
+                                    <span data-i18n="roles.${role}">${i18n.t('roles.' + role)}</span>
                                 </div>
                             </label>
                         `).join('')}
@@ -751,14 +756,14 @@ export const ProfilePage = {
                 <div class="form-row" style="justify-content: center; gap: 40px;">
                     <!-- DAMAGE TYPE -->
                     <div class="filter-group" style="flex: 0 1 auto;">
-                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.dmg_type"></label>
+                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.dmg_type">${i18n.t('profile.dmg_type')}</label>
                         <div class="dmg-grid" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                             ${CONFIG.DMG_TYPES.map(type => {
                                 const selected = isEdit && Array.isArray(char.dmgType) ? char.dmgType.includes(type) : (isEdit && char.dmgType === type);
                                 return `
                                 <div class="dmg-card ${selected ? 'selected' : ''}" onclick="window.toggleSelection(this, 'dmg-type')" data-value="${type}">
-                                    <img src="assets/element/${type}.png" onerror="this.style.display='none'">
-                                    <span data-i18n="dmg_types.${type}"></span>
+                                    <img src="${CONFIG.BASE_PATH}/assets/element/${type}.png" onerror="this.style.display='none'">
+                                    <span data-i18n="dmg_types.${type}">${i18n.t('dmg_types.' + type)}</span>
                                 </div>
                                 `;
                             }).join('')}
@@ -767,21 +772,21 @@ export const ProfilePage = {
 
                     <!-- ELEMENTS (Max 3) -->
                     <div class="filter-group" style="flex: 0 1 auto;">
-                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.elements"></label>
+                        <label class="label-tech" style="text-align: center; display: block;" data-i18n="profile.elements">${i18n.t('profile.elements')}</label>
                         <div class="elements-grid" id="elements-container" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                             ${CONFIG.ELEMENTS.map(el => {
                                 const selected = isEdit && char.elements?.includes(el);
                                 return `
                                 <div class="element-card ${selected ? 'selected' : ''}" onclick="window.toggleElement(this)" data-value="${el}">
-                                    <img src="assets/element/${el}.png" onerror="this.style.display='none'">
-                                    <span data-i18n="elements.${el}"></span>
+                                    <img src="${CONFIG.BASE_PATH}/assets/element/${el}.png" onerror="this.style.display='none'">
+                                    <span data-i18n="elements.${el}">${i18n.t('elements.' + el)}</span>
                                 </div>
                                 `;
                             }).join('')}
                             <!-- Stasis Special -->
                             <div class="element-card special-stasis ${isEdit && char.elements?.includes('stasis') ? 'selected' : ''}" id="stasis-card" style="display: ${isEdit && char.classId === 16 ? 'flex' : 'none'};" data-value="stasis">
-                                <img src="assets/element/stasis.png" onerror="this.style.display='none'">
-                                <span data-i18n="elements.stasis"></span>
+                                <img src="${CONFIG.BASE_PATH}/assets/element/stasis.png" onerror="this.style.display='none'">
+                                <span data-i18n="elements.stasis">${i18n.t('elements.stasis')}</span>
                             </div>
                         </div>
                     </div>

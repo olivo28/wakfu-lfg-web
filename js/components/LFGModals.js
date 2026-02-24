@@ -7,7 +7,7 @@ import { DungeonSelector } from './DungeonSelector.js';
 import { CharacterCard } from './CharacterCard.js';
 
 export const LFGModals = {
-    openCreateGroupModal: async (preSelectedDungeon = null, editingGroup = null) => {
+    openCreateGroupModal: async (preSelectedDungeon = null, editingGroup = null, onSuccess = null) => {
         const lang = i18n.currentLang;
         const editData = editingGroup ? (editingGroup.data || editingGroup) : null;
         const isEditing = !!editingGroup;
@@ -24,21 +24,21 @@ export const LFGModals = {
         const modalContent = `
             <div class="form-tech-vertical" id="create-group-form">
                 <div class="group-hero-banner" id="create-group-banner" style="margin-bottom: 20px; border-radius: 8px; height: 120px;">
-                    <img src="assets/mazmos/${selectedDungeon?.id || 'default'}.png" class="hero-img" onerror="this.src='assets/backgrounds/default_dungeon.jpg'">
+                    <img src="${CONFIG.BASE_PATH}/assets/mazmos/${selectedDungeon?.id || 'default'}.png" class="hero-img" onerror="this.src='${CONFIG.BASE_PATH}/assets/backgrounds/default_dungeon.jpg'">
                 </div>
                 <div class="filter-group">
-                    <label class="label-tech" data-i18n="dungeons.dungeon">Mazmorra</label>
+                    <label class="label-tech" data-i18n="dungeons.dungeon">${i18n.t('dungeons.dungeon')}</label>
                     <div id="create-dungeon-selector"></div>
                 </div>
 
                 <div class="filter-group">
-                    <label class="label-tech" data-i18n="lfg.group_title"></label>
+                    <label class="label-tech" data-i18n="lfg.group_title">${i18n.t('lfg.group_title')}</label>
                     <input type="text" id="group-title" class="input-tech" placeholder="${i18n.t('filters.placeholder_group_title')}" autocomplete="off" value="${editData?.title || ''}" maxlength="50">
                 </div>
 
                 <div class="form-row">
                     <div class="filter-group" style="flex: 1;">
-                        <label class="label-tech" data-i18n="dungeon.stasis"></label>
+                        <label class="label-tech" data-i18n="dungeon.stasis">${i18n.t('dungeon.stasis')}</label>
                         <select id="group-stasis" class="input-tech">
                             ${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(s => `
                                 <option value="${s}" ${editData?.difficulty?.stasis == s ? 'selected' : ''}>${s}</option>
@@ -46,7 +46,7 @@ export const LFGModals = {
                         </select>
                     </div>
                     <div class="filter-group" style="flex: 1;">
-                        <label class="label-tech" data-i18n="home.filter_server">Servidor</label>
+                        <label class="label-tech" data-i18n="home.filter_server">${i18n.t('home.filter_server')}</label>
                         <select id="group-server" class="input-tech">
                             ${CONFIG.SERVERS.map(s => `
                                 <option value="${s}" ${editData?.server == s ? 'selected' : ''}>${s}</option>
@@ -57,17 +57,17 @@ export const LFGModals = {
 
                 <div class="form-row">
                     <div class="filter-group" style="flex: 1;">
-                        <label class="label-tech" data-i18n="dungeon.modulated"></label>
+                        <label class="label-tech" data-i18n="dungeon.modulated">${i18n.t('dungeon.modulated')}</label>
                         <select id="group-modulated" class="input-tech">
-                            <option value="false" ${editData?.difficulty?.is_modulated === false ? 'selected' : ''} data-i18n="ui.no"></option>
-                            <option value="true" ${editData?.difficulty?.is_modulated === true ? 'selected' : ''} data-i18n="ui.yes"></option>
+                            <option value="false" ${editData?.difficulty?.is_modulated === false ? 'selected' : ''} data-i18n="ui.no">${i18n.t('ui.no')}</option>
+                            <option value="true" ${editData?.difficulty?.is_modulated === true ? 'selected' : ''} data-i18n="ui.yes">${i18n.t('ui.yes')}</option>
                         </select>
                     </div>
                     <div class="filter-group" style="flex: 2;">
-                        <label class="label-tech" data-i18n="lfg.leader_title"></label>
+                        <label class="label-tech" data-i18n="lfg.leader_title">${i18n.t('lfg.leader_title')}</label>
                         <div class="custom-select-tech" id="leader-selector-custom">
                             <div class="select-trigger input-tech" id="leader-trigger">
-                                <span data-i18n="ui.loading"></span>
+                                <span data-i18n="ui.loading">${i18n.t('ui.loading')}</span>
                                 <i class="arrow-down"></i>
                             </div>
                             <div class="select-options-list hide" id="leader-options">
@@ -76,7 +76,7 @@ export const LFGModals = {
                                     const gender = String(c.gender || 0);
                                     return `
                                         <div class="custom-option" data-id="${c.id}" data-server="${c.server}">
-                                            <img src="assets/classes/emote/${paddedId}${gender}.png" class="emote-mini">
+                                            <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${gender}.png" class="emote-mini">
                                             <span>${c.name} (Lvl ${c.level})</span>
                                         </div>
                                     `;
@@ -88,15 +88,15 @@ export const LFGModals = {
                 </div>
 
                 <div class="filter-group">
-                    <label class="label-tech" data-i18n="lfg.roles_title"></label>
+                    <label class="label-tech" data-i18n="lfg.roles_title">${i18n.t('lfg.roles_title')}</label>
                     <div class="roles-selection-visual">
                         ${CONFIG.ROLES.map(role => `
                             <label class="role-option-card">
                                 <input type="checkbox" name="roles-needed" value="${role}" 
                                     ${editData?.roles_needed?.includes(role) ? 'checked' : ''}>
                                 <div class="role-content">
-                                    <img src="assets/roles/${role}.png" alt="${role}">
-                                    <span data-i18n="roles.${role}"></span>
+                                    <img src="${CONFIG.BASE_PATH}/assets/roles/${role}.png" alt="${role}">
+                                    <span data-i18n="roles.${role}">${i18n.t('roles.' + role)}</span>
                                 </div>
                             </label>
                         `).join('')}
@@ -104,12 +104,12 @@ export const LFGModals = {
                 </div>
 
                 <div class="filter-group">
-                    <label class="label-tech" data-i18n="lfg.dmg_title"></label>
+                    <label class="label-tech" data-i18n="lfg.dmg_title">${i18n.t('lfg.dmg_title')}</label>
                     <div class="dmg-grid">
                         ${CONFIG.DMG_TYPES.map(type => `
                             <div class="dmg-card ${editData?.dmgType === type ? 'selected' : ''}" onclick="window.toggleSelection(this, 'dmg-type')" data-value="${type}">
-                                <img src="assets/element/${type}.png">
-                                <span data-i18n="dmg_types.${type}"></span>
+                                <img src="${CONFIG.BASE_PATH}/assets/element/${type}.png">
+                                <span data-i18n="dmg_types.${type}">${i18n.t('dmg_types.' + type)}</span>
                             </div>
                         `).join('')}
                     </div>
@@ -117,19 +117,19 @@ export const LFGModals = {
                 </div>
 
                 <div class="filter-group">
-                    <label class="label-tech" data-i18n="lfg.elements_title"></label>
+                    <label class="label-tech" data-i18n="lfg.elements_title">${i18n.t('lfg.elements_title')}</label>
                     <div class="elements-grid">
                         ${CONFIG.ELEMENTS.map(el => `
                             <div class="element-card ${editData?.elements?.includes(el) ? 'selected' : ''}" onclick="window.toggleElement(this)" data-value="${el}">
-                                <img src="assets/element/${el}.png">
-                                <span data-i18n="elements.${el}"></span>
+                                <img src="${CONFIG.BASE_PATH}/assets/element/${el}.png">
+                                <span data-i18n="elements.${el}">${i18n.t('elements.' + el)}</span>
                             </div>
                         `).join('')}
                     </div>
                 </div>
 
                 <div class="filter-group">
-                    <label class="label-tech" data-i18n="lfg.chat_languages"></label>
+                    <label class="label-tech" data-i18n="lfg.chat_languages">${i18n.t('lfg.chat_languages')}</label>
                     <div class="roles-selection-visual" style="gap: 10px;">
                         ${['PT', 'ES', 'EN', 'FR'].map(l => {
                             const flags = {
@@ -154,17 +154,17 @@ export const LFGModals = {
 
                 <div class="form-row" style="margin-bottom: 20px;">
                     <div class="filter-group" style="flex: 1;">
-                        <label class="label-tech" data-i18n="lfg.mission_only"></label>
+                        <label class="label-tech" data-i18n="lfg.mission_only">${i18n.t('lfg.mission_only')}</label>
                         <select id="group-mission-only" class="input-tech" style="border-color: #ffd700;">
-                            <option value="false" ${editData?.missionOnly === false ? 'selected' : ''} data-i18n="ui.no"></option>
-                            <option value="true" ${editData?.missionOnly === true ? 'selected' : ''} data-i18n="ui.yes"></option>
+                            <option value="false" ${editData?.missionOnly === false ? 'selected' : ''} data-i18n="ui.no">${i18n.t('ui.no')}</option>
+                            <option value="true" ${editData?.missionOnly === true ? 'selected' : ''} data-i18n="ui.yes">${i18n.t('ui.yes')}</option>
                         </select>
                     </div>
                     <div class="filter-group" style="flex: 1;">
-                        <label class="label-tech" data-i18n="lfg.requires_mechanics" style="font-size: 8px;"></label>
+                        <label class="label-tech" data-i18n="lfg.requires_mechanics" style="font-size: 8px;">${i18n.t('lfg.requires_mechanics')}</label>
                         <select id="group-requires-mechanics" class="input-tech" style="border-color: #ff4d4d;">
-                            <option value="false" ${editData?.requiresMechanics === false ? 'selected' : ''} data-i18n="ui.no"></option>
-                            <option value="true" ${editData?.requiresMechanics === true ? 'selected' : ''} data-i18n="ui.yes"></option>
+                            <option value="false" ${editData?.requiresMechanics === false ? 'selected' : ''} data-i18n="ui.no">${i18n.t('ui.no')}</option>
+                            <option value="true" ${editData?.requiresMechanics === true ? 'selected' : ''} data-i18n="ui.yes">${i18n.t('ui.yes')}</option>
                         </select>
                     </div>
                 </div>
@@ -236,7 +236,7 @@ export const LFGModals = {
                 if (onSuccess) {
                     onSuccess();
                 } else {
-                    if (window.location.hash.includes('finder')) {
+                    if (window.location.pathname.includes('finder')) {
                         window.location.reload();
                     } else {
                         Router.navigateTo('/');
@@ -252,7 +252,7 @@ export const LFGModals = {
             selectedDungeon = dungeon;
             const bannerImg = document.querySelector('#create-group-banner img');
             if (bannerImg) {
-                bannerImg.src = `assets/mazmos/${dungeon.id}.png`;
+                bannerImg.src = `${CONFIG.BASE_PATH}/assets/mazmos/${dungeon.id}.png`;
             }
         }, preSelectedDungeon || (editingGroup ? { id: editData.dungeonId, name: editData.dungeonName } : null)); 
 
@@ -320,7 +320,7 @@ export const LFGModals = {
                 const gender = String(char.gender || 0);
                 leaderTrigger.innerHTML = `
                     <div class="select-trigger-content">
-                        <img src="assets/classes/emote/${paddedId}${gender}.png" class="emote-mini">
+                        <img src="${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${gender}.png" class="emote-mini">
                         <span>${char.name} (Lvl ${char.level})</span>
                     </div>
                     <i class="arrow-down"></i>
@@ -425,9 +425,8 @@ export const LFGModals = {
         };
 
         const renderStep1 = () => `
-            <div class="detailed-join-container">
                 <div class="group-hero-banner">
-                    <img src="assets/mazmos/${dungeonId}.png" class="hero-img" onerror="this.src='assets/backgrounds/default_dungeon.jpg'">
+                    <img src="${CONFIG.BASE_PATH}/assets/mazmos/${dungeonId}.png" class="hero-img" onerror="this.src='${CONFIG.BASE_PATH}/assets/backgrounds/default_dungeon.jpg'">
                     <div class="hero-overlay">
                         <div class="hero-main-info">
                             <span class="srv-badge srv-${server.toLowerCase()}">${server}</span>
@@ -466,19 +465,19 @@ export const LFGModals = {
                             <div class="roles-big-list">
                                 ${rolesNeeded.map(role => `
                                     <div class="role-requirement-item">
-                                        <img src="assets/roles/${role}.png" class="role-icon-big">
+                                        <img src="${CONFIG.BASE_PATH}/assets/roles/${role}.png" class="role-icon-big">
                                         <span data-i18n="roles.${role}">${i18n.t('roles.' + role)}</span>
                                     </div>
                                 `).join('')}
                                 
                                 <div class="tech-spec-row" style="display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; width: 100%;">
                                     <div class="role-requirement-item">
-                                        <img src="assets/element/${groupDmgType}.png" class="role-icon-big">
+                                        <img src="${CONFIG.BASE_PATH}/assets/element/${groupDmgType}.png" class="role-icon-big">
                                         <span data-i18n="dmg_types.${groupDmgType}">${i18n.t('dmg_types.' + groupDmgType)}</span>
                                     </div>
                                     ${groupElements.map(el => `
                                         <div class="role-requirement-item">
-                                            <img src="assets/element/${el}.png" class="role-icon-big">
+                                            <img src="${CONFIG.BASE_PATH}/assets/element/${el}.png" class="role-icon-big">
                                             <span data-i18n="elements.${el}">${i18n.t('elements.' + el)}</span>
                                         </div>
                                     `).join('')}

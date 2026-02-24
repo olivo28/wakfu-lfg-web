@@ -4,7 +4,7 @@ import { i18n } from '../core/i18n.js';
 export const AuthPage = {
     getSEOData: () => ({
         title: `${i18n.t('auth.title')} | Wakfu LFG`,
-        description: 'Inicia sesión con Discord para empezar a buscar o crear grupos en Wakfu.'
+        description: i18n.t('auth.seo_description')
     }),
 
     render: async () => {
@@ -16,39 +16,39 @@ export const AuthPage = {
             <div class="auth-container fade-in">
                 <div class="card auth-card technical-card">
                     <div class="auth-header">
-                        <img src="assets/classes/icons/${randomId}.png" class="auth-logo icon-technical">
-                        <h1 class="auth-title" data-i18n="auth.title"></h1>
+                        <img src="${CONFIG.BASE_PATH}/assets/classes/icons/${randomId}.png" class="auth-logo icon-technical">
+                        <h1 class="auth-title" data-i18n="auth.title">${i18n.t('auth.title')}</h1>
                         <div class="auth-subtitle-line">
                             <span class="line"></span>
-                            <p class="auth-subtitle" data-i18n="auth.subtitle"></p>
+                            <p class="auth-subtitle" data-i18n="auth.subtitle">${i18n.t('auth.subtitle')}</p>
                             <span class="line"></span>
                         </div>
                     </div>
                     
                     <div class="auth-body">
-                        <p class="auth-description" data-i18n="auth.description"></p>
+                        <p class="auth-description" data-i18n="auth.description">${i18n.t('auth.description')}</p>
                         
                         <div class="auth-features">
                             <div class="feature-item">
                                 <span class="accent-dot"></span>
-                                <span data-i18n="auth.feature_chars"></span>
+                                <span data-i18n="auth.feature_chars">${i18n.t('auth.feature_chars')}</span>
                             </div>
                             <div class="feature-item">
                                 <span class="accent-dot"></span>
-                                <span data-i18n="auth.feature_groups"></span>
+                                <span data-i18n="auth.feature_groups">${i18n.t('auth.feature_groups')}</span>
                             </div>
                             <div class="feature-item">
                                 <span class="accent-dot"></span>
-                                <span data-i18n="auth.feature_notif"></span>
+                                <span data-i18n="auth.feature_notif">${i18n.t('auth.feature_notif')}</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="auth-footer">
                         <button id="btn-discord-login" class="btn btn-discord btn-full">
-                            <span data-i18n="auth.login_btn"></span>
+                            <span data-i18n="auth.login_btn">${i18n.t('auth.login_btn')}</span>
                         </button>
-                        <a href="#/" data-link class="btn-back" data-i18n="auth.back_link"></a>
+                        <a href="/" data-link class="btn-back" data-i18n="auth.back_link">${i18n.t('auth.back_link')}</a>
                     </div>
                 </div>
             </div>

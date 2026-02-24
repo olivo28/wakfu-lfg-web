@@ -23,7 +23,8 @@ export const API = {
         if (response.status === 401) {
             localStorage.removeItem(CONFIG.STORAGE_KEYS.AUTH_TOKEN);
             localStorage.removeItem(CONFIG.STORAGE_KEYS.USER_DATA);
-            window.location.hash = '/login';
+            const { Router } = await import('./router.js');
+            Router.navigateTo('/login');
             return;
         }
 
@@ -142,11 +143,11 @@ export const API = {
     // ==========================================================================
     // 5. DATOS ESTÁTICOS
     // ==========================================================================
-    getDungeons: () => fetch('./assets/data/mazmos.json').then(r => r.json()),
+    getDungeons: () => fetch(`${CONFIG.BASE_PATH}/assets/data/mazmos.json`).then(r => r.json()),
     
     getClasses: async () => {
         if (masterClassesCache) return masterClassesCache;
-        const res = await fetch('./assets/data/clases.json');
+        const res = await fetch(`${CONFIG.BASE_PATH}/assets/data/clases.json`);
         masterClassesCache = await res.json();
         return masterClassesCache;
     },

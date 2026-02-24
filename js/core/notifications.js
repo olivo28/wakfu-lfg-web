@@ -1,3 +1,4 @@
+import { CONFIG } from '../config.js';
 import { API } from './api.js';
 import { Socket } from './Socket.js';
 import { i18n } from './i18n.js';
@@ -35,7 +36,7 @@ export const NotificationSystem = {
         // Pre-load dungeon data for name resolution
         if (!this._mazmos) {
             try {
-                const res = await fetch('./assets/data/mazmos.json');
+                const res = await fetch(`${CONFIG.BASE_PATH}/assets/data/mazmos.json`);
                 this._mazmos = await res.json();
             } catch (e) {
                 this._mazmos = [];
@@ -116,11 +117,11 @@ export const NotificationSystem = {
             const body = this._stripHtml(this._buildMessage(notif));
             
             // Icon optimization: Use character emote if available
-            let icon = 'assets/classes/icons/1.png';
+            let icon = `${CONFIG.BASE_PATH}/assets/classes/icons/1.png`;
             if (notif.data?.classId) {
                 const paddedId = String(notif.data.classId).padStart(2, '0');
                 const gender = notif.data.gender !== undefined ? notif.data.gender : 0;
-                icon = `assets/classes/emote/${paddedId}${gender}.png`;
+                icon = `${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${gender}.png`;
             }
 
             const n = new Notification(title, { body, icon, tag: String(notif.id) });
@@ -179,7 +180,7 @@ export const NotificationSystem = {
                 const gender = d.gender !== undefined ? d.gender : 0;
                 const paddedId = String(classId).padStart(2, '0');
                 const groupTitle = d.groupTitle || '...';
-                const classIcon = `<img src="assets/classes/emote/${paddedId}${gender}.png" class="notif-class-icon" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; border-radius:4px; display:inline-block !important; background: rgba(255,255,255,0.05);">`;
+                const classIcon = `<img src="${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${gender}.png" class="notif-class-icon" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; border-radius:4px; display:inline-block !important; background: rgba(255,255,255,0.05);">`;
                 
                 return i18n.t('notifs.request_received', { 
                     charName: `${classIcon} <b>${charName}</b>`,
@@ -194,7 +195,7 @@ export const NotificationSystem = {
                 let charStr = '';
                 if (charName && classId) {
                     const paddedId = String(classId).padStart(2, '0');
-                    const icon = `<img src="assets/classes/emote/${paddedId}${gender}.png" class="notif-class-icon" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; border-radius:4px; display:inline-block !important; background: rgba(255,255,255,0.05);">`;
+                    const icon = `<img src="${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${gender}.png" class="notif-class-icon" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; border-radius:4px; display:inline-block !important; background: rgba(255,255,255,0.05);">`;
                     charStr = `${icon} <b>${charName}</b>`;
                 }
                 return i18n.t('notifs.request_accepted', { dungeon, charName: charStr }) || `¡Tu solicitud para ${dungeon} fue aceptada!`;
@@ -214,7 +215,7 @@ export const NotificationSystem = {
                 let charStr = '';
                 if (charName && classId) {
                     const paddedId = String(classId).padStart(2, '0');
-                    const icon = `<img src="assets/classes/emote/${paddedId}${gender}.png" class="notif-class-icon" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; border-radius:4px; display:inline-block !important; background: rgba(255,255,255,0.05);">`;
+                    const icon = `<img src="${CONFIG.BASE_PATH}/assets/classes/emote/${paddedId}${gender}.png" class="notif-class-icon" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; border-radius:4px; display:inline-block !important; background: rgba(255,255,255,0.05);">`;
                     charStr = `${icon} <b>${charName}</b>`;
                 }
                 return i18n.t('notifs.kicked_from_group', { dungeon, charName: charStr }) || `Fuiste expulsado del grupo de ${dungeon}.`;

@@ -1,3 +1,4 @@
+import { CONFIG } from '../config.js';
 import { API } from '../core/api.js';
 import { i18n } from '../core/i18n.js';
 import { Router } from '../core/router.js';
@@ -23,27 +24,27 @@ export const DungeonListPage = {
                 <!-- Sidebar de Filtros -->
                 <aside class="dungeon-sidebar">
                     <div class="sidebar-header">
-                        <h2 data-i18n="dungeons.search"></h2>
+                        <h2 data-i18n="dungeons.search">${i18n.t('dungeons.search')}</h2>
                     </div>
                     
                     <div class="filter-group">
-                        <label class="label-tech" for="dungeon-list-search" data-i18n="filters.name"></label>
-                        <input type="text" id="dungeon-list-search" class="input-tech" data-i18n="filters.placeholder_search" autocomplete="off">
+                        <label class="label-tech" for="dungeon-list-search" data-i18n="filters.name">${i18n.t('filters.name')}</label>
+                        <input type="text" id="dungeon-list-search" class="input-tech" placeholder="${i18n.t('filters.placeholder_search')}" data-i18n="filters.placeholder_search" autocomplete="off">
                     </div>
 
                     <div class="filter-group">
-                        <label class="label-tech" data-i18n="filters.players"></label>
+                        <label class="label-tech" data-i18n="filters.players">${i18n.t('filters.players')}</label>
                         <div class="filter-tags" id="filter-players">
-                            <button class="filter-tag active" data-val="all" data-i18n="ui.all"></button>
+                            <button class="filter-tag active" data-val="all" data-i18n="ui.all">${i18n.t('ui.all')}</button>
                             <button class="filter-tag" data-val="3">${i18n.t('ui.players_count', {count: 3})}</button>
                             <button class="filter-tag" data-val="6">${i18n.t('ui.players_count', {count: 6})}</button>
                         </div>
                     </div>
 
                     <div class="filter-group">
-                        <label class="label-tech" data-i18n="home.filter_lvl"></label>
+                        <label class="label-tech" data-i18n="home.filter_lvl">${i18n.t('home.filter_lvl')}</label>
                         <div class="filter-tags level-tags" id="filter-levels">
-                            <button class="filter-tag active" data-val="all" data-i18n="ui.all"></button>
+                            <button class="filter-tag active" data-val="all" data-i18n="ui.all">${i18n.t('ui.all')}</button>
                             <button class="filter-tag" data-val="1-50">1 - 50</button>
                             <button class="filter-tag" data-val="51-100">51 - 100</button>
                             <button class="filter-tag" data-val="101-150">101 - 150</button>
@@ -53,24 +54,24 @@ export const DungeonListPage = {
                     </div>
 
                     <div class="filter-group">
-                        <label class="label-tech" data-i18n="filters.status"></label>
+                        <label class="label-tech" data-i18n="filters.status">${i18n.t('filters.status')}</label>
                         <div class="filter-tags" id="filter-status">
-                            <button class="filter-tag active" data-val="all" data-i18n="ui.all"></button>
-                            <button class="filter-tag" data-val="active" data-i18n="filters.with_groups"></button>
+                            <button class="filter-tag active" data-val="all" data-i18n="ui.all">${i18n.t('ui.all')}</button>
+                            <button class="filter-tag" data-val="active" data-i18n="filters.with_groups">${i18n.t('filters.with_groups')}</button>
                         </div>
                     </div>
 
                     <div class="filter-group">
-                        <label class="label-tech" data-i18n="filters.type">Tipo</label>
+                        <label class="label-tech" data-i18n="filters.type">${i18n.t('filters.type')}</label>
                         <div class="filter-tags" id="filter-type">
-                            <button class="filter-tag active" data-val="all" data-i18n="ui.all"></button>
-                            <button class="filter-tag" data-val="dungeon" data-i18n="dungeons.dungeon">Mazmorra</button>
-                            <button class="filter-tag" data-val="rift" data-i18n="dungeons.breach">Brecha</button>
+                            <button class="filter-tag active" data-val="all" data-i18n="ui.all">${i18n.t('ui.all')}</button>
+                            <button class="filter-tag" data-val="dungeon" data-i18n="dungeons.dungeon">${i18n.t('dungeons.dungeon')}</button>
+                            <button class="filter-tag" data-val="rift" data-i18n="dungeons.breach">${i18n.t('dungeons.breach')}</button>
                         </div>
                     </div>
 
                     <div class="filter-group">
-                        <label class="label-tech" data-i18n="filters.sort_level"></label>
+                        <label class="label-tech" data-i18n="filters.sort_level">${i18n.t('filters.sort_level')}</label>
                         <div class="filter-tags" id="filter-sort">
                             <button class="filter-tag active" data-val="desc">↓ ${i18n.t('filters.highest')}</button>
                             <button class="filter-tag" data-val="asc">↑ ${i18n.t('filters.lowest')}</button>
@@ -83,6 +84,7 @@ export const DungeonListPage = {
                     <div id="dungeons-grid" class="dungeons-grid">
                         <div class="initial-loader">
                             <div class="wakfu-spinner"></div>
+                            <p>${i18n.t('ui.loading')}</p>
                         </div>
                     </div>
                 </main>
@@ -102,8 +104,17 @@ export const DungeonListPage = {
             await DungeonListPage.refresh();
         });
 
-        // Filter States
-        let filters = DungeonListPage.filters;
+        // Reset Filters on navigation
+        DungeonListPage.filters = {
+            search: '',
+            players: 'all',
+            level: 'all',
+            status: 'all',
+            type: 'all',
+            sort: 'desc'
+        };
+
+        const filters = DungeonListPage.filters;
 
         try {
             const [dungeons, groups, stats] = await Promise.all([
@@ -174,7 +185,7 @@ export const DungeonListPage = {
                 });
 
                 if (filtered.length === 0) {
-                    grid.innerHTML = `<div class="empty-state"><p data-i18n="ui.no_results"></p></div>`;
+                    grid.innerHTML = `<div class="empty-state"><p data-i18n="ui.no_results">${i18n.t('ui.no_results')}</p></div>`;
                     i18n.translatePage();
                     return;
                 }
@@ -194,7 +205,7 @@ export const DungeonListPage = {
                                     <span class="badge-level">${i18n.t('ui.level')} ${d.min_lvl}</span>
                                     <span class="badge-modulated" title="${i18n.t('dungeons.mod_level')}"><i class="icon-modulated"></i> ${d.modulated}</span>
                                 </div>
-                                <img src="${d.isDungeon === false ? 'assets/mazmos/default.png' : `assets/mazmos/${d.id}.png`}" alt="${name}" loading="lazy" onerror="this.src='assets/images/placeholder_dungeon.png'">
+                                <img src="${d.isDungeon === false ? `${CONFIG.BASE_PATH}/assets/mazmos/default.png` : `${CONFIG.BASE_PATH}/assets/mazmos/${d.id}.png`}" alt="${name}" loading="lazy" onerror="this.src='${CONFIG.BASE_PATH}/assets/images/placeholder_dungeon.png'">
                                 ${count > 0 ? `
                                     <div class="active-badge animate-pulse">
                                         ${count === 1 
@@ -291,7 +302,7 @@ export const DungeonListPage = {
 
         } catch (error) {
             console.error("Error loading dungeons:", error);
-            grid.innerHTML = `<div class="error-message" data-i18n="ui.error_load"></div>`;
+            grid.innerHTML = `<div class="error-message" data-i18n="ui.error_load">${i18n.t('ui.error_load')}</div>`;
             i18n.translatePage();
         }
     },

@@ -1,5 +1,6 @@
 import { API } from '../core/api.js';
 import { i18n } from '../core/i18n.js';
+import { CONFIG } from '../config.js';
 
 export const DungeonSelector = {
     dungeons: [],
@@ -55,7 +56,7 @@ export const DungeonSelector = {
             if (filtered.length > 0) {
                 list.innerHTML = filtered.map(d => `
                     <div class="dung-item" data-id="${d.id}">
-                        <img src="${d.isDungeon === false ? 'assets/mazmos/default.png' : `assets/mazmos/${d.id}.png`}" class="dung-icon-mini" onerror="this.src='assets/classes/icons/8.png'">
+                        <img src="${d.isDungeon === false ? `${CONFIG.BASE_PATH}/assets/mazmos/default.png` : `${CONFIG.BASE_PATH}/assets/mazmos/${d.id}.png`}" class="dung-icon-mini" onerror="this.src='${CONFIG.BASE_PATH}/assets/classes/icons/8.png'">
                         <div class="dung-info">
                             <span class="dung-name">${d.name[lang] || d.name['es']}</span>
                             <span class="dung-meta">${i18n.t('ui.level').toUpperCase()} ${d.min_lvl}</span>

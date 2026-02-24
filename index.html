@@ -15,9 +15,29 @@
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
 
-    <meta name="theme-color" content="#1a1a1a">
+    <!-- History API Redirect Handler (GH Pages hack) -->
+    <script>
+        (function () {
+            // 1. Detectar el path base (para GH Pages o Localhost)
+            var path = window.location.pathname;
+            var isGHPages = window.location.hostname.includes('github.io') || path.startsWith('/wakfu-lfg-web');
+            var basePath = isGHPages ? '/wakfu-lfg-web/' : '/';
 
-    <!-- Estilos -->
+            // 2. Inyectar tag <base> dinámicamente
+            var base = document.createElement('base');
+            base.href = basePath;
+            document.head.appendChild(base);
+
+            // 3. Manejar redirección del 404.html
+            var redirect = sessionStorage.redirect;
+            delete sessionStorage.redirect;
+            if (redirect && redirect !== location.href) {
+                history.replaceState(null, null, redirect);
+            }
+        })();
+    </script>
+
+    <!-- Estilos (Rutas relativas que usarán el <base>) -->
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/lfg_extra.css">
     <link rel="stylesheet" href="css/lfg_detail.css">
@@ -38,7 +58,7 @@
     <main id="app" class="layout-content">
         <div class="initial-loader">
             <div class="wakfu-spinner"></div>
-            <p data-i18n="ui.loading"></p>
+            <p data-i18n="ui.loading">Cargando el Mundo de los Doce...</p>
         </div>
     </main>
 
