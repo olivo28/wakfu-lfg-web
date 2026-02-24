@@ -255,13 +255,21 @@ export const GroupDetailPage = {
                                 <span class="info-val">${levelDisplay}</span>
                             </div>
 
-                            ${(group.createdAt || group.updatedAt) ? `
+                            ${(group.createdAt || group.updatedAt) ? (() => {
+                                // Ensure timestamps are parsed as UTC (DB stores without timezone info).
+                                // Adding 'Z' suffix forces JS to treat the string as UTC before converting to local.
+                                const toLocalStr = (raw) => {
+                                    if (!raw) return null;
+                                    const utcStr = String(raw).replace(' ', 'T').replace(/Z?$/, 'Z');
+                                    return new Date(utcStr).toLocaleString(i18n.currentLang, { dateStyle: 'short', timeStyle: 'short' });
+                                };
+                                return `
                                 <div class="admin-metadata-panel" style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 10px; color: var(--text-dim);">
-                                    ${group.createdAt ? `<div><strong>${i18n.t('ui.created')}:</strong> ${new Date(group.createdAt).toLocaleString()}</div>` : ''}
-                                    ${group.updatedAt ? `<div><strong>${i18n.t('ui.updated')}:</strong> ${new Date(group.updatedAt).toLocaleString()}</div>` : ''}
+                                    ${group.createdAt ? `<div><strong>${i18n.t('ui.created')}:</strong> ${toLocalStr(group.createdAt)}</div>` : ''}
+                                    ${group.updatedAt ? `<div><strong>${i18n.t('ui.updated')}:</strong> ${toLocalStr(group.updatedAt)}</div>` : ''}
                                     ${group.isAdminView ? `<div style="color: var(--accent-color); margin-top: 4px;">[${i18n.t('ui.admin_mode')}]</div>` : ''}
-                                </div>
-                            ` : ''}
+                                </div>`;
+                            })() : ''}
 
                             <hr class="divider-tech">
                             
